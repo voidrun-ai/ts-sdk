@@ -1,0 +1,42 @@
+{
+  "name": "@voidrun/sdk",
+  "version": "0.0.25",
+  "description": "VoidRun AI Sandbox SDK",
+  "type": "module",
+  "main": "./dist/cjs/index.cjs",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "package-lock.json"
+  ],
+  "scripts": {
+    "build": "npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc && node scripts/fix-esm-imports.cjs",
+    "build:cjs": "tsc --module commonjs --outDir dist/cjs --declaration --declarationDir dist/cjs && node scripts/rename-cjs.cjs",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build && npm version patch"
+  },
+  "keywords": [],
+  "author": "VoidRun",
+  "license": "ISC",
+  "dependencies": {
+    "ws": "^8.19.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "@types/ws": "^8.18.1",
+    "typescript": "^5.9.3"
+  }
+}
