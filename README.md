@@ -96,7 +96,7 @@ console.log(result.data?.exitCode); // exit code
 
 ### Code Interpreter
 
-Execute code in multiple programming languages with a simple, intuitive API (similar to e2b or Daytona).
+Execute code in multiple programming languages with a simple, intuitive API
 
 ```typescript
 // Initialize interpreter with your language
