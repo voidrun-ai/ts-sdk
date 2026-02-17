@@ -13,6 +13,7 @@ All URIs are relative to *http://localhost:33944/api*
 | [**pauseSandbox**](SandboxesApi.md#pausesandbox) | **POST** /sandboxes/{id}/pause | Pause sandbox |
 | [**restoreSandbox**](SandboxesApi.md#restoresandboxoperation) | **POST** /sandboxes/restore | Restore sandbox from snapshot |
 | [**resumeSandbox**](SandboxesApi.md#resumesandbox) | **POST** /sandboxes/{id}/resume | Resume sandbox |
+| [**startSandbox**](SandboxesApi.md#startsandbox) | **POST** /sandboxes/{id}/start | Start sandbox |
 | [**stopSandbox**](SandboxesApi.md#stopsandbox) | **POST** /sandboxes/{id}/stop | Stop sandbox |
 
 
@@ -671,6 +672,80 @@ example().catch(console.error);
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Sandbox resumed |  -  |
+| **401** | Unauthorized |  -  |
+| **404** | Sandbox not found |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## startSandbox
+
+> SuccessResponse startSandbox(id)
+
+Start sandbox
+
+Start a stopped sandbox
+
+### Example
+
+```ts
+import {
+  Configuration,
+  SandboxesApi,
+} from '';
+import type { StartSandboxRequest } from '';
+
+async function example() {
+  console.log("🚀 Testing  SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ApiKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new SandboxesApi(config);
+
+  const body = {
+    // string
+    id: 65ae1234567890abcdef1234,
+  } satisfies StartSandboxRequest;
+
+  try {
+    const data = await api.startSandbox(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **id** | `string` |  | [Defaults to `undefined`] |
+
+### Return type
+
+[**SuccessResponse**](SuccessResponse.md)
+
+### Authorization
+
+[ApiKeyAuth](../README.md#ApiKeyAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Sandbox started |  -  |
+| **400** | Invalid request (sandbox not stopped) |  -  |
 | **401** | Unauthorized |  -  |
 | **404** | Sandbox not found |  -  |
 

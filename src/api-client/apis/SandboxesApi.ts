@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Hyper Fleet Native API
- * Hyper Fleet Native API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` require the `X-API-Key` header for authentication. 
+ * VoidRun API
+ * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` require the `X-API-Key` header for authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -80,6 +80,10 @@ export interface RestoreSandboxOperationRequest {
 }
 
 export interface ResumeSandboxRequest {
+    id: string;
+}
+
+export interface StartSandboxRequest {
     id: string;
 }
 
@@ -480,6 +484,49 @@ export class SandboxesApi extends runtime.BaseAPI {
      */
     async resumeSandbox(requestParameters: ResumeSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.resumeSandboxRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Start a stopped sandbox
+     * Start sandbox
+     */
+    async startSandboxRaw(requestParameters: StartSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling startSandbox().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key"); // ApiKeyAuth authentication
+        }
+
+
+        let urlPath = `/sandboxes/{id}/start`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Start a stopped sandbox
+     * Start sandbox
+     */
+    async startSandbox(requestParameters: StartSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.startSandboxRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

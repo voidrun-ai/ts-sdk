@@ -78,6 +78,30 @@ export default class VRSandbox {
         }));
     }
 
+    async start() {
+        await wrapRequest(this.sandboxesApi.startSandbox({
+            id: this.id
+        }));
+    }
+
+    async stop() {
+        await wrapRequest(this.sandboxesApi.stopSandbox({
+            id: this.id
+        }));
+    }
+
+    async pause() {
+        await wrapRequest(this.sandboxesApi.pauseSandbox({
+            id: this.id
+        }));
+    }
+
+    async resume() {
+        await wrapRequest(this.sandboxesApi.resumeSandbox({
+            id: this.id
+        }));
+    }
+
     async info() {
         return this;
     }
