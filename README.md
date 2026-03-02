@@ -39,11 +39,10 @@ import { VoidRun } from "@voidrun/sdk";
 // Initialize the SDK with your credentials
 const vr = new VoidRun({
   apiKey: "your-api-key-here",
-  baseUrl: "https://api.voidrun.com"
 });
 
 // Create a sandbox
-const sandbox = await vr.createSandbox({ mem: 1024, cpu: 1 });
+const sandbox = await vr.createSandbox({});
 
 // Execute a command
 const result = await sandbox.exec({ command: 'echo "Hello from VoidRun"' });
@@ -703,7 +702,6 @@ The SDK can be configured by passing options to the `VoidRun` constructor:
 ```typescript
 const vr = new VoidRun({
   apiKey: "your-api-key",              // Required: Your API key
-  baseUrl: "https://api.voidrun.com",  // Required: API base URL
   orgId: "your-org-id"                 // Optional: Organization ID
 });
 ```
@@ -778,8 +776,7 @@ Pass your API key in the constructor:
 
 ```typescript
 const vr = new VoidRun({
-  apiKey: "your-api-key",
-  baseUrl: "https://api.voidrun.com"
+  apiKey: "your-api-key"
 });
 ```
 
@@ -789,8 +786,7 @@ Pass the base URL in the constructor:
 
 ```typescript
 const vr = new VoidRun({
-  apiKey: "your-api-key",
-  baseUrl: "https://api.voidrun.com"
+  apiKey: "your-api-key"
 });
 ```
 
@@ -842,7 +838,6 @@ const content = await sandbox.fs.downloadFile("/app/file.txt");
 Full API documentation is available at:
 
 - [API Client Docs](./src/api-client/docs/)
-- [OpenAPI Spec](./openapi.yml)
 
 ## Contributing
 
@@ -854,25 +849,9 @@ ISC License - See LICENSE file for details
 
 ## Support
 
-- 📧 Email: support@voidrun.com
+- 📧 Email: support@void-run.com
 - 🐛 Issues: [GitHub Issues](https://github.com/voidrun/ts-sdk/issues)
 - 💬 Discussions: [GitHub Discussions](https://github.com/voidrun/ts-sdk/discussions)
-
-## Changelog
-
-### v0.0.2
-
-- Fixed PTY session response field mapping
-- Added fallback logic for empty sessionId
-- Improved error handling and validation
-
-### v0.0.1
-
-- Initial release
-- Sandbox management
-- File operations
-- Code execution
-- PTY support
 
 ---
 
