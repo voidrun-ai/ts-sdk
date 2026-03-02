@@ -13,7 +13,7 @@
  */
 
 
-export const BASE_PATH = "http://localhost:33944/api".replace(/\/+$/, "");
+export const BASE_PATH = "https://platform.void-run.com/api".replace(/\/+$/, "");
 
 export interface ConfigurationParameters {
     basePath?: string; // override base path

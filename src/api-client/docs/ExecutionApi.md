@@ -1,6 +1,6 @@
 # ExecutionApi
 
-All URIs are relative to *http://localhost:33944/api*
+All URIs are relative to *https://platform.void-run.com/api*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
