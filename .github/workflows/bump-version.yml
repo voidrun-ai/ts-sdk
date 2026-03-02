@@ -13,16 +13,17 @@ on:
           - minor
           - major
 
+permissions:
+  contents: write
+
 jobs:
   bump-version:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
           fetch-depth: 0
 
       - name: Setup Node
@@ -53,6 +54,18 @@ jobs:
           git push origin main
           git push origin v${{ steps.bump_version.outputs.new_version }}
 
+      - name: Trigger Publish Workflow
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GH_PAT }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'publish-ts-sdk.yml',
+              ref: `v${{ steps.bump_version.outputs.new_version }}`
+            });
+
       - name: Summary
         run: |
           echo "### Version Bumped" >> $GITHUB_STEP_SUMMARY
@@ -60,4 +73,3 @@ jobs:
           echo "- **Previous version:** v${{ steps.current_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "- **New version:** v${{ steps.bump_version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Bump type:** ${{ inputs.version_type }}" >> $GITHUB_STEP_SUMMARY
-
