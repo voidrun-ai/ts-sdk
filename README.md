@@ -15,7 +15,7 @@ A powerful, type-safe SDK for interacting with VoidRun AI Sandboxes. Execute cod
 - 🧠 **Code Interpreter** - Easy multi-language code execution (Python, JavaScript, Bash)
 - ⚡ **Background Commands** - Run, list, kill, and attach to background processes
 - 🔐 **Type-Safe** - Full TypeScript support with generated types from OpenAPI
-- 🎯 **Promise-Based** - Modern async/await API
+- 🎯 **Promise-aokd** - Modern async/await API
 
 ## Installation
 
@@ -382,8 +382,8 @@ new VoidRun(options?: VoidRunConfig)
 
 **Options:**
 
-- `apiKey?: string` - API key (defaults to `process.env.API_KEY`)
-- `baseUrl?: string` - Base API URL (defaults to `process.env.VOIDRUN_BASE_URL`)
+- `apiKey?: string` - API key (defaults to `process.env.VR_API_KEY`)
+- `baseUrl?: string` - Base API URL (defaults to `process.env.VR_API_URL`)
 - `orgId?: string` - Organization ID (optional)
 
 **Methods:**
@@ -770,7 +770,7 @@ npm run publish
 
 ## Troubleshooting
 
-### "API key is required"
+### "API key is required, either pass in constructor or in env vars"
 
 Pass your API key in the constructor:
 
@@ -780,14 +780,9 @@ const vr = new VoidRun({
 });
 ```
 
-### "Base URL is required"
-
-Pass the base URL in the constructor:
-
-```typescript
-const vr = new VoidRun({
-  apiKey: "your-api-key"
-});
+Pass in env vars(.env)
+```bash
+VR_API_KEY=vr_sddfgd2353erggdfgfdgdgdfg
 ```
 
 ### "Sandbox creation failed"
