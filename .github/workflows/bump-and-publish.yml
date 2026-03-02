@@ -13,8 +13,13 @@ on:
           - minor
           - major
 
+# Prevents multiple "Bump" workflows from running at once and colliding
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
-  contents: write # Required to push commits and tags back to the repo
+  contents: write
 
 jobs:
   release:
@@ -23,21 +28,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # Use GITHUB_TOKEN for internal operations. 
-          # Since this is one workflow, we don't need a PAT to trigger others.
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
+          fetch-depth: 0 # Get all history so we can pull/rebase correctly
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20" # Using 20 (LTS) for stability
+          node-version: "20"
           registry-url: "https://registry.npmjs.org"
 
       - name: Configure Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          # This solves the "divergent branches" error by rebasing your version bump 
+          # on top of any new changes found on main
+          git config --global pull.rebase true
 
       - name: Install dependencies
         run: npm ci
@@ -48,14 +54,16 @@ jobs:
       - name: Bump version
         id: bump
         run: |
-          # npm version updates package.json and creates a git commit + tag
           npm version ${{ inputs.version_type }} -m "chore: release v%s"
-          NEW_VERSION=$(node -p "require('./package.json').version")
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "new_version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
-      - name: Push changes to GitHub
+      - name: Sync and Push
         run: |
-          # Pushes the commit and the newly created tag
+          # 1. Pull latest changes from main (in case someone pushed during the 'Build' step)
+          # The --rebase ensures our version bump commit stays at the very top
+          git pull origin main --rebase
+          
+          # 2. Push the commit and the tag
           git push origin main --follow-tags
 
       - name: Publish to NPM
@@ -66,6 +74,4 @@ jobs:
       - name: Summary
         run: |
           echo "### 🚀 Release Successful" >> $GITHUB_STEP_SUMMARY
-          echo "- **Version bumped to:** v${{ steps.bump.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **NPM Status:** Published" >> $GITHUB_STEP_SUMMARY
-          echo "- **Bump Type:** ${{ inputs.version_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** v${{ steps.bump.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
