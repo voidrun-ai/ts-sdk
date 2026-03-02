@@ -1,0 +1,71 @@
+name: Bump and Publish SDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write # Required to push commits and tags back to the repo
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Use GITHUB_TOKEN for internal operations. 
+          # Since this is one workflow, we don't need a PAT to trigger others.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # Using 20 (LTS) for stability
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Bump version
+        id: bump
+        run: |
+          # npm version updates package.json and creates a git commit + tag
+          npm version ${{ inputs.version_type }} -m "chore: release v%s"
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Push changes to GitHub
+        run: |
+          # Pushes the commit and the newly created tag
+          git push origin main --follow-tags
+
+      - name: Publish to NPM
+        run: npm publish --access public --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Summary
+        run: |
+          echo "### 🚀 Release Successful" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version bumped to:** v${{ steps.bump.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **NPM Status:** Published" >> $GITHUB_STEP_SUMMARY
+          echo "- **Bump Type:** ${{ inputs.version_type }}" >> $GITHUB_STEP_SUMMARY
