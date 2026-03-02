@@ -7,14 +7,14 @@ A powerful, type-safe SDK for interacting with VoidRun AI Sandboxes. Execute cod
 
 ## Features
 
-- 🏗️ **Sandbox Management** - Create, list, snapshot, and restore sandboxes
-- 🚀 **Code Execution** - Execute commands with real-time output capture
+- 🏗️ **Sandbox Management** - Create, list, start, stop, pause, resume, and remove sandboxes
+- 🚀 **Code Execution** - Execute commands with real-time streaming output capture
 - 📁 **File Operations** - Create, read, delete, compress, and extract files
 - 👀 **File Watching** - Monitor file changes in real-time via WebSocket
 - 💻 **Pseudo-Terminal (PTY)** - Interactive terminal sessions (ephemeral & persistent)
-- 🧠 **Code Interpreter** - Easy multi-language code execution (Python, JavaScript, Bash, etc.)
+- 🧠 **Code Interpreter** - Easy multi-language code execution (Python, JavaScript, Bash)
+- ⚡ **Background Commands** - Run, list, kill, and attach to background processes
 - 🔐 **Type-Safe** - Full TypeScript support with generated types from OpenAPI
-- ⚡ **WebSocket Support** - Real-time streaming for PTY, file watches, and execution
 - 🎯 **Promise-Based** - Modern async/await API
 
 ## Installation
@@ -31,21 +31,16 @@ yarn add @voidrun/sdk
 
 ## Quick Start
 
-### Authentication
-
-Set your API key via environment variable:
-
-```bash
-export API_KEY="your-api-key-here"
-```
-
 ### Basic Usage
 
 ```typescript
 import { VoidRun } from "@voidrun/sdk";
 
-// Initialize the SDK
-const vr = new VoidRun({});
+// Initialize the SDK with your credentials
+const vr = new VoidRun({
+  apiKey: "your-api-key-here",
+  baseUrl: "https://api.voidrun.com"
+});
 
 // Create a sandbox
 const sandbox = await vr.createSandbox({ mem: 1024, cpu: 1 });
@@ -65,10 +60,16 @@ await sandbox.remove();
 An isolated environment where you can execute code, manage files, and run terminals.
 
 ```typescript
-// Create a sandbox
+// Create a sandbox with options
 const sandbox = await vr.createSandbox({
-  mem: 1024, // Memory in MB (optional, has defaults)
-  cpu: 1, // CPU cores (optional, has defaults)
+  name: "my-sandbox",       // Optional: Sandbox name
+  mem: 1024,                // Memory in MB (optional, has defaults)
+  cpu: 1,                   // CPU cores (optional, has defaults)
+  templateId: "template-id", // Optional: Template ID
+  envVars: {                // Optional: Environment variables
+    DEBUG: 'true',
+    LOG_LEVEL: 'info'
+  }
 });
 
 // List all sandboxes
@@ -78,6 +79,12 @@ console.log(`Total sandboxes: ${sandboxes.length}`);
 // Get a specific sandbox
 const existingSandbox = await vr.getSandbox(sandboxId);
 
+// Sandbox lifecycle management
+await sandbox.start();    // Start a stopped sandbox
+await sandbox.stop();     // Stop a running sandbox
+await sandbox.pause();    // Pause a running sandbox
+await sandbox.resume();   // Resume a paused sandbox
+
 // Remove a sandbox
 await sandbox.remove();
 ```
@@ -86,46 +93,107 @@ await sandbox.remove();
 
 Execute commands and capture output, errors, and exit codes.
 
+#### Synchronous Execution
+
 ```typescript
 const result = await sandbox.exec({ command: "ls -la /home" });
 
-console.log(result.data?.stdout); // stdout
-console.log(result.data?.stderr); // stderr
+console.log(result.data?.stdout);   // standard output
+console.log(result.data?.stderr);   // standard error
 console.log(result.data?.exitCode); // exit code
+```
+
+#### Streaming Execution (SSE)
+
+For real-time output, provide streaming handlers:
+
+```typescript
+await sandbox.exec({
+  command: "seq 1 10 | while read i; do echo \"Line $i\"; sleep 1; done"
+}, {
+  onStdout: (data) => console.log('stdout:', data),
+  onStderr: (data) => console.log('stderr:', data),
+  onExit: (result) => console.log('exit:', result),
+  onError: (error) => console.error('error:', error),
+  signal: abortController.signal // Optional: AbortSignal for cancellation
+});
+```
+
+#### Execution with Options
+
+```typescript
+const result = await sandbox.exec({
+  command: "echo $MY_VAR && pwd",
+  cwd: "/tmp",                    // Working directory
+  env: { MY_VAR: "test_value" },  // Environment variables
+  timeout: 30                      // Timeout in seconds
+});
 ```
 
 ### Code Interpreter
 
-Execute code in multiple programming languages with a simple, intuitive API
+Execute code in multiple programming languages with a simple, intuitive API.
 
 ```typescript
-// Initialize interpreter with your language
-await sandbox.interpreter.initialize("python");
+// Execute Python code
+const result = await sandbox.runCode('print(2 + 2)', { language: 'python' });
+console.log(result.stdout.trim());  // "4"
+console.log(result.success);        // true
 
-// Execute code
-const result = await sandbox.interpreter.execute("print(2 + 2)");
-if (result.success) {
-  console.log(result.output); // "4"
-}
+// Execute JavaScript code
+const jsResult = await sandbox.runCode('console.log("Hello")', { language: 'javascript' });
 
-// Execute multiple snippets
-const results = await sandbox.interpreter.executeMultiple([
-  "x = 10",
-  "y = 20",
-  "print(x + y)",
-]);
+// Execute with streaming output
+const streamResult = await sandbox.runCode(`
+  for i in range(5):
+      print(f"Iteration {i}")
+`, {
+  language: 'python',
+  onStdout: (data) => console.log(data),
+  onStderr: (data) => console.error(data),
+});
 
-// Switch languages
-await sandbox.interpreter.reset("javascript");
-const jsResult = await sandbox.interpreter.execute("console.log(2 + 2)");
-
-// Clean up
-await sandbox.interpreter.close();
+// Check execution result
+console.log(streamResult.exitCode);  // 0 for success
+console.log(streamResult.results);   // Parsed results
+console.log(streamResult.logs);      // { stdout: [...], stderr: [...] }
 ```
 
-Supported languages: **Python**, **JavaScript**, **Node.js**, **Bash**, **Go**, **Ruby**, **Java**, **C#**
+**Supported Languages:** `python`, `javascript`, `typescript`, `node`, `bash`, `sh`
 
-See [Code Interpreter API](./CODE_INTERPRETER_API.md) for comprehensive documentation.
+### Background Commands
+
+Run long-running processes in the background and manage them.
+
+```typescript
+// Start a background process
+const runResult = await sandbox.commands.run(
+  "sleep 100 && echo 'Done'",  // command
+  { DEBUG: 'true' },           // env (optional)
+  "/tmp",                      // cwd (optional)
+  0                            // timeout (0 = no timeout)
+);
+console.log(runResult.pid);     // Process ID
+
+// List all running processes
+const listResult = await sandbox.commands.list();
+console.log(listResult.processes);  // Array of ProcessInfo
+
+// Attach to a process and stream output
+await sandbox.commands.connect(runResult.pid, {
+  onStdout: (data) => console.log(data),
+  onStderr: (data) => console.error(data),
+  onExit: ({ exitCode }) => console.log('Process exited:', exitCode),
+});
+
+// Wait for a process to complete
+const waitResult = await sandbox.commands.wait(runResult.pid);
+console.log(waitResult.exitCode);
+
+// Kill a running process
+const killResult = await sandbox.commands.kill(runResult.pid);
+console.log(killResult.success);
+```
 
 ### File Operations
 
@@ -138,9 +206,22 @@ await sandbox.fs.createFile("/tmp/hello.txt");
 // Upload content to file
 await sandbox.fs.uploadFile("/tmp/hello.txt", "Hello, World!");
 
+// Upload via stream
+const stream = Readable.from(["line 1\n", "line 2\n"]);
+await sandbox.fs.uploadFileStream("/tmp/streamed.txt", Readable.toWeb(stream));
+
 // Read a file
 const buffer = await sandbox.fs.downloadFile("/tmp/hello.txt");
 const content = buffer.toString();
+
+// Download as stream
+const fileStream = await sandbox.fs.downloadFileStream("/tmp/hello.txt");
+const reader = fileStream.getReader();
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  console.log(new TextDecoder().decode(value));
+}
 
 // Delete a file
 await sandbox.fs.deleteFile("/tmp/hello.txt");
@@ -152,12 +233,6 @@ const files = result.data?.files;
 // Get file stats
 const stats = await sandbox.fs.statFile("/tmp/hello.txt");
 
-// Compress files
-await sandbox.fs.compressFile("/tmp", "tar.gz");
-
-// Extract archive
-await sandbox.fs.extractArchive("/tmp/archive.tar.gz", "/tmp/extracted");
-
 // Create directory
 await sandbox.fs.createDirectory("/tmp/mydir");
 
@@ -166,6 +241,26 @@ await sandbox.fs.moveFile("/tmp/file.txt", "/tmp/newfile.txt");
 
 // Copy file
 await sandbox.fs.copyFile("/tmp/file.txt", "/tmp/copy.txt");
+
+// Change permissions
+await sandbox.fs.changePermissions("/tmp/file.txt", "755");
+
+// Head/Tail - read first or last lines
+const head = await sandbox.fs.headTail("/tmp/file.txt", { head: true, lines: 10 });
+const tail = await sandbox.fs.headTail("/tmp/file.txt", { head: false, lines: 10 });
+
+// Search files by pattern
+const search = await sandbox.fs.searchFiles("/tmp", "*.txt");
+
+// Get folder size
+const size = await sandbox.fs.folderSize("/tmp");
+
+// Compress files
+const archive = await sandbox.fs.compressFile("/tmp", "tar.gz");
+console.log(archive.archivePath || archive.data?.archivePath);
+
+// Extract archive
+await sandbox.fs.extractArchive("/tmp/archive.tar.gz", "/tmp/extracted");
 ```
 
 ### File Watching
@@ -181,6 +276,9 @@ const watcher = await sandbox.fs.watch("/app", {
   onError: (err) => {
     console.error("Watch error:", err);
   },
+  onClose: () => {
+    console.log("Watcher closed");
+  }
 });
 
 // Stop watching
@@ -205,8 +303,8 @@ const pty = await sandbox.pty.connect({
 });
 
 // Send commands
-pty.write('echo "Hello"\n');
-pty.write("pwd\n");
+pty.sendInput('echo "Hello"\n');
+pty.sendInput("pwd\n");
 
 // Close connection
 pty.close();
@@ -228,9 +326,9 @@ const pty = await sandbox.pty.connect({
 });
 
 // Send commands
-pty.write('echo "Hello"\n');
+pty.sendInput('echo "Hello"\n');
 
-// Close connection
+// Close connection (session persists)
 pty.close();
 
 // Reconnect later - session and output persist
@@ -249,7 +347,7 @@ Run commands with automatic prompt detection:
 ```typescript
 const pty = await sandbox.pty.connect({ sessionId });
 
-const output = await pty.runCommand("echo $SHELL", {
+const output = await pty.runCommand("ls -la", {
   timeout: 5000,
   prompt: /[#$] $/, // Regex to detect shell prompt
 });
@@ -280,7 +378,7 @@ await sandbox.pty.deleteSession(sessionId);
 Main client for interacting with the API.
 
 ```typescript
-new VoidRun(options?: VoidRunOptions)
+new VoidRun(options?: VoidRunConfig)
 ```
 
 **Options:**
@@ -298,8 +396,8 @@ new VoidRun(options?: VoidRunOptions)
   - `mem?: number` - Memory in MB
   - `orgId?: string` - Organization ID
   - `userId?: string` - User ID
-  - `sync?: boolean` - Sync mode
-  - `language?: 'javascript' | 'typescript' | 'python'` - Language
+  - `sync?: boolean` - Sync mode (default: true)
+  - `envVars?: Record<string, string>` - Environment variables
 - `listSandboxes()` - List all sandboxes (returns `{ sandboxes: Sandbox[], meta }`)
 - `getSandbox(id: string)` - Get a specific sandbox
 - `removeSandbox(id: string)` - Delete a sandbox
@@ -318,17 +416,30 @@ Represents an isolated sandbox environment.
 - `createdAt: Date` - Creation timestamp
 - `createdBy: string` - Creator ID
 - `status: string` - Sandbox status
-- `language?: string` - Language (optional)
+- `envVars?: { [key: string]: string }` - Environment variables
 - `fs: FS` - File system interface
 - `pty: PTY` - PTY interface
+- `interpreter: CodeInterpreter` - Code interpreter
+- `commands: Commands` - Background commands interface
 
 **Methods:**
 
-- `exec(request: ExecRequest)` - Execute a command
+- `exec(request: ExecRequest, handlers?: ExecStreamHandlers)` - Execute a command
   - `request.command: string` - Command to execute
-  - `request.cwd?: string` - Working directory (optional)
-  - `request.env?: Record<string, string>` - Environment variables (optional)
-  - `request.timeout?: number` - Timeout in seconds (optional)
+  - `request.cwd?: string` - Working directory
+  - `request.env?: Record<string, string>` - Environment variables
+  - `request.timeout?: number` - Timeout in seconds
+  - `handlers.onStdout?: (data: string) => void` - Stream stdout
+  - `handlers.onStderr?: (data: string) => void` - Stream stderr
+  - `handlers.onExit?: (result: ExecStreamExit) => void` - Exit handler
+  - `handlers.onError?: (error: Error) => void` - Error handler
+  - `handlers.signal?: AbortSignal` - Abort signal
+- `execStream(request: ExecRequest, handlers: ExecStreamHandlers)` - Streaming execution
+- `runCode(code: string, options?: CodeExecutionOptions)` - Execute code
+- `start()` - Start the sandbox
+- `stop()` - Stop the sandbox
+- `pause()` - Pause the sandbox
+- `resume()` - Resume the sandbox
 - `remove()` - Delete the sandbox
 - `info()` - Get sandbox information
 
@@ -344,6 +455,35 @@ Represents an isolated sandbox environment.
 }
 ```
 
+**Code Execution Result:**
+
+```typescript
+{
+  success: boolean;
+  results: any;           // Parsed results
+  stdout: string;         // Combined stdout
+  stderr: string;         // Combined stderr
+  error?: string;         // Error message if any
+  exitCode?: number;      // Process exit code
+  logs: {
+    stdout: string[];     // Individual stdout lines
+    stderr: string[];     // Individual stderr lines
+  };
+}
+```
+
+### Commands Class
+
+Background process management.
+
+**Methods:**
+
+- `run(command: string, env?: Record<string, string>, cwd?: string, timeout?: number)` - Start a background process
+- `list()` - List all running processes
+- `kill(pid: number)` - Kill a process
+- `connect(pid: number, handlers: ProcessAttachHandlers)` - Attach to process output stream
+- `wait(pid: number)` - Wait for process to complete
+
 ### FileSystem Interface
 
 Manage files and directories.
@@ -353,10 +493,9 @@ Manage files and directories.
 - `createFile(path: string)` - Create a file
 - `uploadFile(path: string, content: string)` - Upload file content
 - `uploadFileStream(path: string, stream: ReadableStream)` - Upload file as stream
-- `uploadFileFromPath(remotePath: string, localPath: string)` - Upload from local file
 - `downloadFile(path: string)` - Download file as Buffer
 - `downloadFileStream(path: string)` - Download file as ReadableStream
-- `deleteFile(path: string)` - Delete a file
+- `deleteFile(path: string)` - Delete a file/directory
 - `listFiles(path: string)` - List directory contents
 - `statFile(path: string)` - Get file metadata
 - `createDirectory(path: string)` - Create a directory
@@ -403,7 +542,7 @@ Pseudo-terminal operations.
 
 **PtySession Methods:**
 
-- `write(data: string)` - Send data
+- `sendInput(data: string)` - Send data to terminal
 - `runCommand(cmd: string, options: RunCommandOptions)` - Execute with prompt detection
 - `resize(cols: number, rows: number)` - Resize terminal
 - `close()` - Close connection
@@ -431,6 +570,54 @@ print("Hello from Python!")
 
 const result = await sandbox.exec({ command: "python3 /tmp/script.py" });
 console.log(result.data?.stdout);
+
+await sandbox.remove();
+```
+
+### Code Interpreter Workflow
+
+```typescript
+const sandbox = await vr.createSandbox({ name: 'interpreter-demo' });
+
+// Python data analysis
+const result = await sandbox.runCode(`
+import json
+data = [1, 2, 3, 4, 5]
+result = {
+    "sum": sum(data),
+    "avg": sum(data) / len(data),
+    "max": max(data)
+}
+print(json.dumps(result))
+`, { language: 'python' });
+
+console.log(result.results);  // Parsed JSON output
+
+// JavaScript
+const jsResult = await sandbox.runCode(`
+const fib = (n) => n <= 1 ? n : fib(n-1) + fib(n-2);
+console.log(fib(10));
+`, { language: 'javascript' });
+
+await sandbox.remove();
+```
+
+### Background Process Management
+
+```typescript
+const sandbox = await vr.createSandbox({});
+
+// Start a long-running process
+const { pid } = await sandbox.commands.run("tail -f /var/log/syslog");
+
+// Attach to stream output
+await sandbox.commands.connect(pid, {
+  onStdout: (data) => console.log(data),
+  onExit: ({ exitCode }) => console.log('Exited:', exitCode),
+});
+
+// Later, kill the process
+await sandbox.commands.kill(pid);
 
 await sandbox.remove();
 ```
@@ -496,13 +683,13 @@ const pty = await sandbox.pty.connect({
 });
 
 // Interactive commands
-pty.write("npm init -y\n");
+pty.sendInput("npm init -y\n");
 await new Promise((r) => setTimeout(r, 1000));
 
-pty.write("npm install express\n");
+pty.sendInput("npm install express\n");
 await new Promise((r) => setTimeout(r, 2000));
 
-pty.write('node -e "console.log(process.version)"\n');
+pty.sendInput('node -e "console.log(process.version)"\n');
 await new Promise((r) => setTimeout(r, 500));
 
 pty.close();
@@ -511,29 +698,14 @@ await sandbox.remove();
 
 ## Configuration
 
-### Environment Variables
+The SDK can be configured by passing options to the `VoidRun` constructor:
 
-```bash
-# API Key (required)
-export API_KEY="your-api-key-here"
-
-# Base URL (optional)
-export VOIDRUN_BASE_URL="https://api.voidrun.com"
-```
-
-### .env File
-
-Create a `.env` file in your project root:
-
-```env
-API_KEY=your-api-key-here
-VOIDRUN_BASE_URL=https://api.voidrun.com
-```
-
-Then run with:
-
-```bash
-npx tsx --env-file=.env your-script.ts
+```typescript
+const vr = new VoidRun({
+  apiKey: "your-api-key",              // Required: Your API key
+  baseUrl: "https://api.voidrun.com",  // Required: API base URL
+  orgId: "your-org-id"                 // Optional: Organization ID
+});
 ```
 
 ## Error Handling
@@ -562,18 +734,21 @@ Run the comprehensive test suite:
 
 ```bash
 npm install
-npx tsx --env-file=.env example/test-pty-comprehensive.ts
+npx tsx example/test-sandbox-exec.ts
 ```
 
 Available examples:
 
-- `test-pty-comprehensive.ts` - Full PTY testing (9 scenarios)
-- `test-sandbox-exec.ts` - Code execution examples
+- `test-sandbox-exec.ts` - Command execution with streaming
 - `test-sandbox-fs.ts` - File system operations
-- `test-sandbox-lifecycle.ts` - Sandbox management
+- `test-sandbox-lifecycle.ts` - Sandbox lifecycle management
+- `test-pty.ts` - PTY session management
+- `test-pty-comprehensive.ts` - Full PTY testing (9 scenarios)
 - `test-watch.ts` - File watching
-- `js-example.ts` - JavaScript example
-- `py-example.ts` - Python example
+- `test-background-exec.ts` - Background process management
+- `code-interpreter-example.ts` - Code interpreter usage
+- `test-commonjs-import.cjs` - CommonJS import test
+- `test-esm-import.mjs` - ESM import test
 
 ## Building from Source
 
@@ -597,12 +772,26 @@ npm run publish
 
 ## Troubleshooting
 
-### "API_KEY is not set"
+### "API key is required"
 
-Set your API key:
+Pass your API key in the constructor:
 
-```bash
-export API_KEY="your-api-key"
+```typescript
+const vr = new VoidRun({
+  apiKey: "your-api-key",
+  baseUrl: "https://api.voidrun.com"
+});
+```
+
+### "Base URL is required"
+
+Pass the base URL in the constructor:
+
+```typescript
+const vr = new VoidRun({
+  apiKey: "your-api-key",
+  baseUrl: "https://api.voidrun.com"
+});
 ```
 
 ### "Sandbox creation failed"
@@ -615,7 +804,7 @@ Ensure your sandbox parameters are valid:
 ```typescript
 const sandbox = await vr.createSandbox({
   mem: 1024, // At least 1GB
-  cpu: 1, // At least 1 core
+  cpu: 1,    // At least 1 core
 });
 ```
 
@@ -645,15 +834,15 @@ const files = await sandbox.fs.listFiles("/app");
 console.log(files.data?.files);
 
 // Then access specific file
-const content = await sandbox.fs.readFile("/app/file.txt");
+const content = await sandbox.fs.downloadFile("/app/file.txt");
 ```
 
 ## API Documentation
 
 Full API documentation is available at:
 
+- [API Client Docs](./src/api-client/docs/)
 - [OpenAPI Spec](./openapi.yml)
-- [API Docs](./src/api-client/docs/)
 
 ## Contributing
 
