@@ -13,17 +13,16 @@ on:
           - minor
           - major
 
-permissions:
-  contents: write
-
 jobs:
   bump-version:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
       - name: Setup Node
@@ -61,3 +60,4 @@ jobs:
           echo "- **Previous version:** v${{ steps.current_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "- **New version:** v${{ steps.bump_version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Bump type:** ${{ inputs.version_type }}" >> $GITHUB_STEP_SUMMARY
+
