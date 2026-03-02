@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * VoidRun API
- * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` require the `X-API-Key` header for authentication. 
+ * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` and `/api/version` require the `X-API-Key` header for authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -16,30 +16,46 @@
 import * as runtime from '../runtime';
 import type {
   APIKeyResponse,
+  ActivateAPIKeyRequest,
   ErrorResponse,
   GenerateAPIKeyRequest,
   GeneratedAPIKeyResponse,
+  GetOrgUsers200Response,
   Organization,
   SuccessResponse,
 } from '../models/index';
 import {
     APIKeyResponseFromJSON,
     APIKeyResponseToJSON,
+    ActivateAPIKeyRequestFromJSON,
+    ActivateAPIKeyRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
     GenerateAPIKeyRequestFromJSON,
     GenerateAPIKeyRequestToJSON,
     GeneratedAPIKeyResponseFromJSON,
     GeneratedAPIKeyResponseToJSON,
+    GetOrgUsers200ResponseFromJSON,
+    GetOrgUsers200ResponseToJSON,
     OrganizationFromJSON,
     OrganizationToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
 } from '../models/index';
 
+export interface ActivateAPIKeyOperationRequest {
+    orgId: string;
+    keyId: string;
+    activateAPIKeyRequest: ActivateAPIKeyRequest;
+}
+
 export interface GenerateAPIKeyOperationRequest {
     orgId: string;
     generateAPIKeyRequest: GenerateAPIKeyRequest;
+}
+
+export interface GetOrgUsersRequest {
+    orgId: string;
 }
 
 export interface ListAPIKeysRequest {
@@ -51,10 +67,76 @@ export interface RevokeAPIKeyRequest {
     keyId: string;
 }
 
+export interface TouchAPIKeyRequest {
+    orgId: string;
+    keyId: string;
+}
+
 /**
  * 
  */
 export class OrganizationsApi extends runtime.BaseAPI {
+
+    /**
+     * Toggle an API key\'s active status.
+     * Activate or deactivate API key
+     */
+    async activateAPIKeyRaw(requestParameters: ActivateAPIKeyOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters['orgId'] == null) {
+            throw new runtime.RequiredError(
+                'orgId',
+                'Required parameter "orgId" was null or undefined when calling activateAPIKey().'
+            );
+        }
+
+        if (requestParameters['keyId'] == null) {
+            throw new runtime.RequiredError(
+                'keyId',
+                'Required parameter "keyId" was null or undefined when calling activateAPIKey().'
+            );
+        }
+
+        if (requestParameters['activateAPIKeyRequest'] == null) {
+            throw new runtime.RequiredError(
+                'activateAPIKeyRequest',
+                'Required parameter "activateAPIKeyRequest" was null or undefined when calling activateAPIKey().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key"); // ApiKeyAuth authentication
+        }
+
+
+        let urlPath = `/orgs/{orgId}/apikeys/{keyId}/activate`;
+        urlPath = urlPath.replace(`{${"orgId"}}`, encodeURIComponent(String(requestParameters['orgId'])));
+        urlPath = urlPath.replace(`{${"keyId"}}`, encodeURIComponent(String(requestParameters['keyId'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ActivateAPIKeyRequestToJSON(requestParameters['activateAPIKeyRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Toggle an API key\'s active status.
+     * Activate or deactivate API key
+     */
+    async activateAPIKey(requestParameters: ActivateAPIKeyOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.activateAPIKeyRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Create a new API key for the organization. The plain key is only returned once.
@@ -141,6 +223,49 @@ export class OrganizationsApi extends runtime.BaseAPI {
      */
     async getCurrentOrg(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Organization> {
         const response = await this.getCurrentOrgRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get users who are members of the organization.
+     * List organization users
+     */
+    async getOrgUsersRaw(requestParameters: GetOrgUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetOrgUsers200Response>> {
+        if (requestParameters['orgId'] == null) {
+            throw new runtime.RequiredError(
+                'orgId',
+                'Required parameter "orgId" was null or undefined when calling getOrgUsers().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key"); // ApiKeyAuth authentication
+        }
+
+
+        let urlPath = `/orgs/{orgId}/users`;
+        urlPath = urlPath.replace(`{${"orgId"}}`, encodeURIComponent(String(requestParameters['orgId'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetOrgUsers200ResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get users who are members of the organization.
+     * List organization users
+     */
+    async getOrgUsers(requestParameters: GetOrgUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetOrgUsers200Response> {
+        const response = await this.getOrgUsersRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -235,6 +360,57 @@ export class OrganizationsApi extends runtime.BaseAPI {
      */
     async revokeAPIKey(requestParameters: RevokeAPIKeyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.revokeAPIKeyRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Update the API key last-used timestamp.
+     * Touch API key
+     */
+    async touchAPIKeyRaw(requestParameters: TouchAPIKeyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters['orgId'] == null) {
+            throw new runtime.RequiredError(
+                'orgId',
+                'Required parameter "orgId" was null or undefined when calling touchAPIKey().'
+            );
+        }
+
+        if (requestParameters['keyId'] == null) {
+            throw new runtime.RequiredError(
+                'keyId',
+                'Required parameter "keyId" was null or undefined when calling touchAPIKey().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key"); // ApiKeyAuth authentication
+        }
+
+
+        let urlPath = `/orgs/{orgId}/apikeys/{keyId}/touch`;
+        urlPath = urlPath.replace(`{${"orgId"}}`, encodeURIComponent(String(requestParameters['orgId'])));
+        urlPath = urlPath.replace(`{${"keyId"}}`, encodeURIComponent(String(requestParameters['keyId'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Update the API key last-used timestamp.
+     * Touch API key
+     */
+    async touchAPIKey(requestParameters: TouchAPIKeyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.touchAPIKeyRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

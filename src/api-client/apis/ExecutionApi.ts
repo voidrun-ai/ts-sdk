@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * VoidRun API
- * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` require the `X-API-Key` header for authentication. 
+ * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` and `/api/version` require the `X-API-Key` header for authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -30,6 +30,9 @@ import type {
   ListPTYSessions200Response,
   ResizeTerminalRequest,
   RunBackgroundCommandRequest,
+  SessionExecRequest,
+  SessionExecResponse,
+  SessionExecStreamRequest,
   SuccessResponse,
 } from '../models/index';
 import {
@@ -63,6 +66,12 @@ import {
     ResizeTerminalRequestToJSON,
     RunBackgroundCommandRequestFromJSON,
     RunBackgroundCommandRequestToJSON,
+    SessionExecRequestFromJSON,
+    SessionExecRequestToJSON,
+    SessionExecResponseFromJSON,
+    SessionExecResponseToJSON,
+    SessionExecStreamRequestFromJSON,
+    SessionExecStreamRequestToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
 } from '../models/index';
@@ -134,6 +143,16 @@ export interface ResizeTerminalOperationRequest {
 export interface RunBackgroundCommandOperationRequest {
     id: string;
     runBackgroundCommandRequest: RunBackgroundCommandRequest;
+}
+
+export interface SessionExecOperationRequest {
+    id: string;
+    sessionExecRequest: SessionExecRequest;
+}
+
+export interface SessionExecStreamOperationRequest {
+    id: string;
+    sessionExecStreamRequest: SessionExecStreamRequest;
 }
 
 export interface WaitForBackgroundProcessRequest {
@@ -864,6 +883,116 @@ export class ExecutionApi extends runtime.BaseAPI {
      */
     async runBackgroundCommand(requestParameters: RunBackgroundCommandOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CommandRunResponse> {
         const response = await this.runBackgroundCommandRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Send a PTY session action (`create`, `exec`, `input`, `resize`, `close`) to the sandbox agent.
+     * Execute PTY session action
+     */
+    async sessionExecRaw(requestParameters: SessionExecOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SessionExecResponse>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling sessionExec().'
+            );
+        }
+
+        if (requestParameters['sessionExecRequest'] == null) {
+            throw new runtime.RequiredError(
+                'sessionExecRequest',
+                'Required parameter "sessionExecRequest" was null or undefined when calling sessionExec().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key"); // ApiKeyAuth authentication
+        }
+
+
+        let urlPath = `/sandboxes/{id}/session-exec`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: SessionExecRequestToJSON(requestParameters['sessionExecRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SessionExecResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Send a PTY session action (`create`, `exec`, `input`, `resize`, `close`) to the sandbox agent.
+     * Execute PTY session action
+     */
+    async sessionExec(requestParameters: SessionExecOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SessionExecResponse> {
+        const response = await this.sessionExecRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Execute a command in an existing PTY session and stream NDJSON output chunks.
+     * Stream PTY session command output
+     */
+    async sessionExecStreamRaw(requestParameters: SessionExecStreamOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling sessionExecStream().'
+            );
+        }
+
+        if (requestParameters['sessionExecStreamRequest'] == null) {
+            throw new runtime.RequiredError(
+                'sessionExecStreamRequest',
+                'Required parameter "sessionExecStreamRequest" was null or undefined when calling sessionExecStream().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key"); // ApiKeyAuth authentication
+        }
+
+
+        let urlPath = `/sandboxes/{id}/session-exec-stream`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: SessionExecStreamRequestToJSON(requestParameters['sessionExecStreamRequest']),
+        }, initOverrides);
+
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<string>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
+    }
+
+    /**
+     * Execute a command in an existing PTY session and stream NDJSON output chunks.
+     * Stream PTY session command output
+     */
+    async sessionExecStream(requestParameters: SessionExecStreamOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+        const response = await this.sessionExecStreamRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

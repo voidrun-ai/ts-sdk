@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * VoidRun API
- * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` require the `X-API-Key` header for authentication. 
+ * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` and `/api/version` require the `X-API-Key` header for authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -20,9 +20,6 @@ import type {
   CreateSandbox201Response,
   CreateSandboxRequest,
   ErrorResponse,
-  RestoreSandboxRequest,
-  Sandbox,
-  Snapshot,
   SuccessResponse,
 } from '../models/index';
 import {
@@ -36,22 +33,12 @@ import {
     CreateSandboxRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
-    RestoreSandboxRequestFromJSON,
-    RestoreSandboxRequestToJSON,
-    SandboxFromJSON,
-    SandboxToJSON,
-    SnapshotFromJSON,
-    SnapshotToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
 } from '../models/index';
 
 export interface CreateSandboxOperationRequest {
     createSandboxRequest: CreateSandboxRequest;
-}
-
-export interface CreateSnapshotRequest {
-    id: string;
 }
 
 export interface DeleteSandboxRequest {
@@ -67,16 +54,8 @@ export interface ListSandboxesRequest {
     limit?: number;
 }
 
-export interface ListSnapshotsRequest {
-    id: string;
-}
-
 export interface PauseSandboxRequest {
     id: string;
-}
-
-export interface RestoreSandboxOperationRequest {
-    restoreSandboxRequest: RestoreSandboxRequest;
 }
 
 export interface ResumeSandboxRequest {
@@ -138,49 +117,6 @@ export class SandboxesApi extends runtime.BaseAPI {
      */
     async createSandbox(requestParameters: CreateSandboxOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateSandbox201Response> {
         const response = await this.createSandboxRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Create a snapshot of the sandbox
-     * Create snapshot
-     */
-    async createSnapshotRaw(requestParameters: CreateSnapshotRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling createSnapshot().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key"); // ApiKeyAuth authentication
-        }
-
-
-        let urlPath = `/sandboxes/{id}/snapshot`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Create a snapshot of the sandbox
-     * Create snapshot
-     */
-    async createSnapshot(requestParameters: CreateSnapshotRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.createSnapshotRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -314,49 +250,6 @@ export class SandboxesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get all snapshots for a sandbox
-     * List snapshots
-     */
-    async listSnapshotsRaw(requestParameters: ListSnapshotsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Snapshot>>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling listSnapshots().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key"); // ApiKeyAuth authentication
-        }
-
-
-        let urlPath = `/sandboxes/{id}/snapshots`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(SnapshotFromJSON));
-    }
-
-    /**
-     * Get all snapshots for a sandbox
-     * List snapshots
-     */
-    async listSnapshots(requestParameters: ListSnapshotsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Snapshot>> {
-        const response = await this.listSnapshotsRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
      * Pause a running sandbox
      * Pause sandbox
      */
@@ -396,51 +289,6 @@ export class SandboxesApi extends runtime.BaseAPI {
      */
     async pauseSandbox(requestParameters: PauseSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.pauseSandboxRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Create a new sandbox from an existing snapshot
-     * Restore sandbox from snapshot
-     */
-    async restoreSandboxRaw(requestParameters: RestoreSandboxOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Sandbox>> {
-        if (requestParameters['restoreSandboxRequest'] == null) {
-            throw new runtime.RequiredError(
-                'restoreSandboxRequest',
-                'Required parameter "restoreSandboxRequest" was null or undefined when calling restoreSandbox().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key"); // ApiKeyAuth authentication
-        }
-
-
-        let urlPath = `/sandboxes/restore`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: RestoreSandboxRequestToJSON(requestParameters['restoreSandboxRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SandboxFromJSON(jsonValue));
-    }
-
-    /**
-     * Create a new sandbox from an existing snapshot
-     * Restore sandbox from snapshot
-     */
-    async restoreSandbox(requestParameters: RestoreSandboxOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Sandbox> {
-        const response = await this.restoreSandboxRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

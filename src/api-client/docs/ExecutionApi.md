@@ -18,6 +18,8 @@ All URIs are relative to *http://localhost:33944/api*
 | [**listPTYSessions**](ExecutionApi.md#listptysessions) | **GET** /sandboxes/{id}/pty/sessions | List PTY sessions |
 | [**resizeTerminal**](ExecutionApi.md#resizeterminaloperation) | **POST** /sandboxes/{id}/pty/sessions/{sessionId}/resize | Resize terminal |
 | [**runBackgroundCommand**](ExecutionApi.md#runbackgroundcommandoperation) | **POST** /sandboxes/{id}/commands/run | Start background process |
+| [**sessionExec**](ExecutionApi.md#sessionexecoperation) | **POST** /sandboxes/{id}/session-exec | Execute PTY session action |
+| [**sessionExecStream**](ExecutionApi.md#sessionexecstreamoperation) | **POST** /sandboxes/{id}/session-exec-stream | Stream PTY session command output |
 | [**waitForBackgroundProcess**](ExecutionApi.md#waitforbackgroundprocess) | **POST** /sandboxes/{id}/commands/wait | Wait for process completion |
 
 
@@ -1083,6 +1085,160 @@ example().catch(console.error);
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Process started |  -  |
+| **400** | Invalid request |  -  |
+| **401** | Unauthorized |  -  |
+| **404** | Sandbox not found |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## sessionExec
+
+> SessionExecResponse sessionExec(id, sessionExecRequest)
+
+Execute PTY session action
+
+Send a PTY session action (&#x60;create&#x60;, &#x60;exec&#x60;, &#x60;input&#x60;, &#x60;resize&#x60;, &#x60;close&#x60;) to the sandbox agent.
+
+### Example
+
+```ts
+import {
+  Configuration,
+  ExecutionApi,
+} from '';
+import type { SessionExecOperationRequest } from '';
+
+async function example() {
+  console.log("🚀 Testing  SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ApiKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new ExecutionApi(config);
+
+  const body = {
+    // string
+    id: 65ae1234567890abcdef1234,
+    // SessionExecRequest
+    sessionExecRequest: ...,
+  } satisfies SessionExecOperationRequest;
+
+  try {
+    const data = await api.sessionExec(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **id** | `string` |  | [Defaults to `undefined`] |
+| **sessionExecRequest** | [SessionExecRequest](SessionExecRequest.md) |  | |
+
+### Return type
+
+[**SessionExecResponse**](SessionExecResponse.md)
+
+### Authorization
+
+[ApiKeyAuth](../README.md#ApiKeyAuth)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Session action result |  -  |
+| **400** | Invalid request |  -  |
+| **401** | Unauthorized |  -  |
+| **404** | Sandbox not found |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## sessionExecStream
+
+> string sessionExecStream(id, sessionExecStreamRequest)
+
+Stream PTY session command output
+
+Execute a command in an existing PTY session and stream NDJSON output chunks.
+
+### Example
+
+```ts
+import {
+  Configuration,
+  ExecutionApi,
+} from '';
+import type { SessionExecStreamOperationRequest } from '';
+
+async function example() {
+  console.log("🚀 Testing  SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ApiKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new ExecutionApi(config);
+
+  const body = {
+    // string
+    id: 65ae1234567890abcdef1234,
+    // SessionExecStreamRequest
+    sessionExecStreamRequest: ...,
+  } satisfies SessionExecStreamOperationRequest;
+
+  try {
+    const data = await api.sessionExecStream(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **id** | `string` |  | [Defaults to `undefined`] |
+| **sessionExecStreamRequest** | [SessionExecStreamRequest](SessionExecStreamRequest.md) |  | |
+
+### Return type
+
+**string**
+
+### Authorization
+
+[ApiKeyAuth](../README.md#ApiKeyAuth)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/x-ndjson`, `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | NDJSON stream of command output |  -  |
 | **400** | Invalid request |  -  |
 | **401** | Unauthorized |  -  |
 | **404** | Sandbox not found |  -  |
