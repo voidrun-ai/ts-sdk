@@ -13,23 +13,23 @@ on:
           - minor
           - major
 
-permissions:
-  contents: write
 
 jobs:
   bump-version:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to push the commit and the tag
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_PAT }}
-          fetch-depth: 0
+          fetch-depth: 0 # Required so git can see previous tags/history
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: "20" # Node 24 is very new; 20/22 are current LTS/Stable
 
       - name: Configure Git
         run: |
@@ -45,26 +45,16 @@ jobs:
       - name: Bump version
         id: bump_version
         run: |
+          # npm version creates a commit and a tag locally
           npm version ${{ inputs.version_type }} -m "chore: bump version to %s"
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Push changes
         run: |
+          # Push the commit to the current branch and push the new tag
           git push origin main
           git push origin v${{ steps.bump_version.outputs.new_version }}
-
-      - name: Trigger Publish Workflow
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GH_PAT }}
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'publish-ts-sdk.yml',
-              ref: `v${{ steps.bump_version.outputs.new_version }}`
-            });
 
       - name: Summary
         run: |
