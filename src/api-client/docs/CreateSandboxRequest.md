@@ -7,7 +7,7 @@
 Name | Type
 ------------ | -------------
 `name` | string
-`templateId` | string
+`image` | string
 `cpu` | number
 `mem` | number
 `orgId` | string
@@ -22,8 +22,8 @@ import type { CreateSandboxRequest } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "name": vm-01,
-  "templateId": 65ae1234567890abcdef1234,
+  "name": "vm-01",
+  "image": "",
   "cpu": 2,
   "mem": 2048,
   "orgId": 65ae1234567890abcdef1234,

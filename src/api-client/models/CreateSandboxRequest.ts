@@ -30,7 +30,7 @@ export interface CreateSandboxRequest {
      * @type {string}
      * @memberof CreateSandboxRequest
      */
-    templateId?: string;
+    image?: string;
     /**
      * Number of vCPUs
      * @type {number}
@@ -88,7 +88,7 @@ export function CreateSandboxRequestFromJSONTyped(json: any, ignoreDiscriminator
     return {
         
         'name': json['name'],
-        'templateId': json['templateId'] == null ? undefined : json['templateId'],
+        'image': json['image'] == null ? undefined : json['image'],
         'cpu': json['cpu'] == null ? undefined : json['cpu'],
         'mem': json['mem'] == null ? undefined : json['mem'],
         'orgId': json['orgId'] == null ? undefined : json['orgId'],
@@ -110,7 +110,7 @@ export function CreateSandboxRequestToJSONTyped(value?: CreateSandboxRequest | n
     return {
         
         'name': value['name'],
-        'templateId': value['templateId'],
+        'image': value['image'],
         'cpu': value['cpu'],
         'mem': value['mem'],
         'orgId': value['orgId'],

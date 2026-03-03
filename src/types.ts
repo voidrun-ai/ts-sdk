@@ -1,6 +1,6 @@
 export type SandboxOptions = {
     name?: string;
-    templateId?: string;
+    image?: string;
     cpu?: number;
     mem?: number;
     orgId?: string;

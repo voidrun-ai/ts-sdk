@@ -49,12 +49,12 @@ export class VoidRun {
 
 
     async createSandbox(options: SandboxOptions) {
-        const { name, cpu, mem, orgId, language, templateId, sync, userId } = options;
+        const { name, cpu, mem, orgId, language, image, sync, userId } = options;
 
         const response = await wrapRequest<CreateSandbox201Response>(this.sandboxesApi.createSandbox({
             createSandboxRequest: {
                 name: name || 'sdbx-' + Date.now(),
-                templateId: templateId || constants.defaultTemplateId,
+                image: image || constants.defaultTemplateId,
                 cpu: cpu || constants.defaultSandboxCpu,
                 mem: mem || constants.defaultSandboxMem,
                 orgId: orgId || '',

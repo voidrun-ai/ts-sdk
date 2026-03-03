@@ -64,7 +64,7 @@ const sandbox = await vr.createSandbox({
   name: "my-sandbox",       // Optional: Sandbox name
   mem: 1024,                // Memory in MB (optional, has defaults)
   cpu: 1,                   // CPU cores (optional, has defaults)
-  templateId: "template-id", // Optional: Template ID
+  image: "template-id", // Optional: Image ID
   envVars: {                // Optional: Environment variables
     DEBUG: 'true',
     LOG_LEVEL: 'info'
@@ -390,7 +390,7 @@ new VoidRun(options?: VoidRunConfig)
 
 - `createSandbox(options: SandboxOptions)` - Create a new sandbox
   - `name?: string` - Sandbox name
-  - `templateId?: string` - Template ID
+  - `image?: string` - Image ID
   - `cpu?: number` - CPU cores
   - `mem?: number` - Memory in MB
   - `orgId?: string` - Organization ID
