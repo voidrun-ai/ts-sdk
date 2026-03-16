@@ -1,24 +1,32 @@
 
-# RegisterRequest
+# GetCurrentUser200Response
 
 
 ## Properties
 
 Name | Type
 ------------ | -------------
+`id` | string
 `name` | string
 `email` | string
+`imageUrl` | string
+`createdAt` | Date
+`orgs` | [Array&lt;GetCurrentUser200ResponseOrgsInner&gt;](GetCurrentUser200ResponseOrgsInner.md)
 
 ## Example
 
 ```typescript
-import type { RegisterRequest } from ''
+import type { GetCurrentUser200Response } from ''
 
 // TODO: Update the object below with actual values
 const example = {
+  "id": 65ae1234567890abcdef1234,
   "name": Admin User,
   "email": admin@example.com,
-} satisfies RegisterRequest
+  "imageUrl": https://example.com/avatar.png,
+  "createdAt": null,
+  "orgs": null,
+} satisfies GetCurrentUser200Response
 
 console.log(example)
 
@@ -27,7 +35,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as RegisterRequest
+const exampleParsed = JSON.parse(exampleJSON) as GetCurrentUser200Response
 console.log(exampleParsed)
 ```
 

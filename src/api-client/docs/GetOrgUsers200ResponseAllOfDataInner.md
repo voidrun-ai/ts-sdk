@@ -9,7 +9,7 @@ Name | Type
 `id` | string
 `name` | string
 `email` | string
-`role` | string
+`imageUrl` | string
 `createdAt` | Date
 
 ## Example
@@ -22,7 +22,7 @@ const example = {
   "id": 65ae1234567890abcdef1234,
   "name": Admin User,
   "email": admin@example.com,
-  "role": owner,
+  "imageUrl": https://example.com/avatar.png,
   "createdAt": null,
 } satisfies GetOrgUsers200ResponseAllOfDataInner
 

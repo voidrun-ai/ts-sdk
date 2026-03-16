@@ -14,6 +14,9 @@ Name | Type
 `userId` | string
 `sync` | boolean
 `envVars` | { [key: string]: string; }
+`disablePause` | boolean
+`region` | string
+`refId` | string
 
 ## Example
 
@@ -22,14 +25,17 @@ import type { CreateSandboxRequest } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "name": "vm-01",
-  "image": "",
+  "name": vm-01,
+  "image": debian,
   "cpu": 2,
   "mem": 2048,
   "orgId": 65ae1234567890abcdef1234,
   "userId": 65ae1234567890abcdef1234,
   "sync": true,
   "envVars": {"DEBUG":"true","LOG_LEVEL":"info"},
+  "disablePause": false,
+  "region": eu,
+  "refId": ftr4dr,
 } satisfies CreateSandboxRequest
 
 console.log(example)

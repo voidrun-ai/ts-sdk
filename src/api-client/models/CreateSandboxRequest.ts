@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * VoidRun API
- * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` and `/api/version` require the `X-API-Key` header for authentication. 
+ * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/version` require the `X-API-Key` header for authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -67,6 +67,24 @@ export interface CreateSandboxRequest {
      * @memberof CreateSandboxRequest
      */
     envVars?: { [key: string]: string; };
+    /**
+     * If true, the sandbox will not be auto-paused due to inactivity
+     * @type {boolean}
+     * @memberof CreateSandboxRequest
+     */
+    disablePause?: boolean;
+    /**
+     * Target region for the sandbox
+     * @type {string}
+     * @memberof CreateSandboxRequest
+     */
+    region?: string;
+    /**
+     * External reference ID for tracking
+     * @type {string}
+     * @memberof CreateSandboxRequest
+     */
+    refId?: string;
 }
 
 /**
@@ -95,6 +113,9 @@ export function CreateSandboxRequestFromJSONTyped(json: any, ignoreDiscriminator
         'userId': json['userId'] == null ? undefined : json['userId'],
         'sync': json['sync'] == null ? undefined : json['sync'],
         'envVars': json['envVars'] == null ? undefined : json['envVars'],
+        'disablePause': json['disablePause'] == null ? undefined : json['disablePause'],
+        'region': json['region'] == null ? undefined : json['region'],
+        'refId': json['refId'] == null ? undefined : json['refId'],
     };
 }
 
@@ -117,6 +138,9 @@ export function CreateSandboxRequestToJSONTyped(value?: CreateSandboxRequest | n
         'userId': value['userId'],
         'sync': value['sync'],
         'envVars': value['envVars'],
+        'disablePause': value['disablePause'],
+        'region': value['region'],
+        'refId': value['refId'],
     };
 }
 

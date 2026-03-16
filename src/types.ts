@@ -10,6 +10,9 @@ export type SandboxOptions = {
     envVars?: Record<string, string>;
     autoStopAfterMinutes?: number;
     autoDeleteAfterMinutes?: number;
+    disablePause?: boolean;
+    region?: string;
+    refId?: string;
 }
 
 export type VoidRunConfig = {

@@ -6,7 +6,6 @@
 
 Name | Type
 ------------ | -------------
-`orgId` | string
 `keyName` | string
 
 ## Example
@@ -16,7 +15,6 @@ import type { GenerateAPIKeyRequest } from ''
 
 // TODO: Update the object below with actual values
 const example = {
-  "orgId": 65ae1234567890abcdef1234,
   "keyName": CI/CD Key,
 } satisfies GenerateAPIKeyRequest
 

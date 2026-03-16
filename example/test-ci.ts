@@ -7,11 +7,7 @@ async function main() {
     try {
         console.log('Creating sandbox...');
         sdbx = await vr.createSandbox({
-            name: 'code-interpreter-ci-test',
-            envVars: {
-                CI: 'true',
-                TEST_MODE: 'enabled'
-            }
+            name: 'code-interpreter-ci-test'
         });
 
         console.log('Executing code snippet: 5 * 7');
@@ -21,9 +17,9 @@ async function main() {
             throw new Error('Unexpected output for 5 * 7');
         }
 
-        result = await sdbx.runCode('const i = 444; console.log("Loopingiiii", i)', { language: 'javascript' });
-        console.log('console js iii', result.stdout.trim());
-        
+        result = await sdbx.runCode('const i = 444; console.log("Looping", i)', { language: 'javascript' });
+        console.log('console js', result.stdout.trim());
+
         result = await sdbx.runCode(`
             function factorial(n) {
                 if (n === 0) return 1;

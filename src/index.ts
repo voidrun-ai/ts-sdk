@@ -49,7 +49,7 @@ export class VoidRun {
 
 
     async createSandbox(options: SandboxOptions) {
-        const { name, cpu, mem, orgId, language, image, sync, userId } = options;
+        const { name, cpu, mem, orgId, image, sync, userId, envVars, disablePause, region, refId } = options;
 
         const response = await wrapRequest<CreateSandbox201Response>(this.sandboxesApi.createSandbox({
             createSandboxRequest: {
@@ -59,11 +59,13 @@ export class VoidRun {
                 mem: mem || constants.defaultSandboxMem,
                 orgId: orgId || '',
                 sync: sync ?? true,
-                userId: userId || ''
+                userId: userId || '',
+                envVars: envVars,
+                disablePause: disablePause,
+                region: region,
+                refId: refId
             }
         }));
-
-        console.log(response.message);
 
         return new VRSandbox(response.data as SandboxModel, this.config);
     }
@@ -76,8 +78,11 @@ export class VoidRun {
         return new VRSandbox(response.data as SandboxModel, this.config);
     }
 
-    async listSandboxes() {
-        const response = await wrapRequest<ApiResponseSandboxesList>(this.sandboxesApi.listSandboxes());
+    async listSandboxes(options: { page?: number; limit?: number } = {}) {
+        const response = await wrapRequest<ApiResponseSandboxesList>(this.sandboxesApi.listSandboxes({
+            page: options.page,
+            limit: options.limit
+        }));
         return {
             sandboxes: response?.data?.map((s: Sandbox) => new VRSandbox(s, this.config)) ?? [],
             meta: response?.meta ?? { total: 0, page: 1, limit: 50, totalPages: 0 }

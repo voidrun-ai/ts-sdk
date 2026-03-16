@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * VoidRun API
- * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` and `/api/version` require the `X-API-Key` header for authentication. 
+ * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/version` require the `X-API-Key` header for authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -37,6 +37,12 @@ export interface APIKeyResponse {
      * @memberof APIKeyResponse
      */
     name?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof APIKeyResponse
+     */
+    scopes?: Array<string>;
     /**
      * 
      * @type {string}
@@ -89,6 +95,7 @@ export function APIKeyResponseFromJSONTyped(json: any, ignoreDiscriminator: bool
         'id': json['id'] == null ? undefined : json['id'],
         'orgId': json['orgId'] == null ? undefined : json['orgId'],
         'name': json['name'] == null ? undefined : json['name'],
+        'scopes': json['scopes'] == null ? undefined : json['scopes'],
         'createdBy': json['createdBy'] == null ? undefined : json['createdBy'],
         'createdAt': json['createdAt'] == null ? undefined : (new Date(json['createdAt'])),
         'lastUsedAt': json['lastUsedAt'] == null ? undefined : (new Date(json['lastUsedAt'])),
@@ -111,6 +118,7 @@ export function APIKeyResponseToJSONTyped(value?: APIKeyResponse | null, ignoreD
         'id': value['id'],
         'orgId': value['orgId'],
         'name': value['name'],
+        'scopes': value['scopes'],
         'createdBy': value['createdBy'],
         'createdAt': value['createdAt'] == null ? value['createdAt'] : value['createdAt'].toISOString(),
         'lastUsedAt': value['lastUsedAt'] == null ? value['lastUsedAt'] : value['lastUsedAt'].toISOString(),

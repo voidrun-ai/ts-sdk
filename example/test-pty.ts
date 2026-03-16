@@ -50,7 +50,7 @@ async function main() {
         const sessions = response.data || [];
         // console.log('\nActive sessions:', sessions);
 
-        const sessionId = (sessions as any)[0]?.id;
+        const firstSessionId = (sessions as any)[0]?.id;
         // pty.close();
 
         // if (sessionId) {

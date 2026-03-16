@@ -9,6 +9,7 @@ Name | Type
 `id` | string
 `orgId` | string
 `name` | string
+`scopes` | Array&lt;string&gt;
 `createdBy` | string
 `createdAt` | Date
 `lastUsedAt` | Date
@@ -25,6 +26,7 @@ const example = {
   "id": 65ae1234567890abcdef1234,
   "orgId": 65ae1234567890abcdef1234,
   "name": CI/CD Key,
+  "scopes": ["*"],
   "createdBy": 65ae1234567890abcdef1234,
   "createdAt": null,
   "lastUsedAt": null,

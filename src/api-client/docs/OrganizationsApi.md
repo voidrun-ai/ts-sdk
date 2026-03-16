@@ -4,23 +4,22 @@ All URIs are relative to *https://platform.void-run.com/api*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
-| [**activateAPIKey**](OrganizationsApi.md#activateapikeyoperation) | **POST** /orgs/{orgId}/apikeys/{keyId}/activate | Activate or deactivate API key |
-| [**generateAPIKey**](OrganizationsApi.md#generateapikeyoperation) | **POST** /orgs/{orgId}/apikeys | Generate new API key |
-| [**getCurrentOrg**](OrganizationsApi.md#getcurrentorg) | **GET** /orgs/me | Get current organization |
-| [**getOrgUsers**](OrganizationsApi.md#getorgusers) | **GET** /orgs/{orgId}/users | List organization users |
-| [**listAPIKeys**](OrganizationsApi.md#listapikeys) | **GET** /orgs/{orgId}/apikeys | List API keys |
-| [**revokeAPIKey**](OrganizationsApi.md#revokeapikey) | **DELETE** /orgs/{orgId}/apikeys/{keyId} | Revoke API key |
-| [**touchAPIKey**](OrganizationsApi.md#touchapikey) | **PATCH** /orgs/{orgId}/apikeys/{keyId}/touch | Touch API key |
+| [**activateAPIKey**](OrganizationsApi.md#activateapikeyoperation) | **POST** /orgs/apikeys/{keyId}/activate | Activate or deactivate API key |
+| [**generateAPIKey**](OrganizationsApi.md#generateapikeyoperation) | **POST** /orgs/apikeys | Generate new API key |
+| [**getOrgUsers**](OrganizationsApi.md#getorgusers) | **GET** /orgs/users | List organization users |
+| [**listAPIKeys**](OrganizationsApi.md#listapikeys) | **GET** /orgs/apikeys | List API keys |
+| [**revokeAPIKey**](OrganizationsApi.md#revokeapikey) | **DELETE** /orgs/apikeys/{keyId} | Revoke API key |
+| [**touchAPIKey**](OrganizationsApi.md#touchapikey) | **PATCH** /orgs/apikeys/{keyId}/touch | Touch API key |
 
 
 
 ## activateAPIKey
 
-> SuccessResponse activateAPIKey(orgId, keyId, activateAPIKeyRequest)
+> SuccessResponse activateAPIKey(keyId, activateAPIKeyRequest)
 
 Activate or deactivate API key
 
-Toggle an API key\&#39;s active status.
+Toggle an API key\&#39;s active status. The organization is derived from the API key context.
 
 ### Example
 
@@ -40,8 +39,6 @@ async function example() {
   const api = new OrganizationsApi(config);
 
   const body = {
-    // string
-    orgId: 65ae1234567890abcdef1234,
     // string
     keyId: 65ae1234567890abcdef1234,
     // ActivateAPIKeyRequest
@@ -65,7 +62,6 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | `string` |  | [Defaults to `undefined`] |
 | **keyId** | `string` |  | [Defaults to `undefined`] |
 | **activateAPIKeyRequest** | [ActivateAPIKeyRequest](ActivateAPIKeyRequest.md) |  | |
 
@@ -95,11 +91,11 @@ example().catch(console.error);
 
 ## generateAPIKey
 
-> GeneratedAPIKeyResponse generateAPIKey(orgId, generateAPIKeyRequest)
+> GeneratedAPIKeyResponse generateAPIKey(generateAPIKeyRequest)
 
 Generate new API key
 
-Create a new API key for the organization. The plain key is only returned once.
+Create a new API key for the organization. The plain key is only returned once. The organization is derived from the API key context.
 
 ### Example
 
@@ -119,8 +115,6 @@ async function example() {
   const api = new OrganizationsApi(config);
 
   const body = {
-    // string
-    orgId: 65ae1234567890abcdef1234,
     // GenerateAPIKeyRequest
     generateAPIKeyRequest: ...,
   } satisfies GenerateAPIKeyOperationRequest;
@@ -142,7 +136,6 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | `string` |  | [Defaults to `undefined`] |
 | **generateAPIKeyRequest** | [GenerateAPIKeyRequest](GenerateAPIKeyRequest.md) |  | |
 
 ### Return type
@@ -169,77 +162,13 @@ example().catch(console.error);
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
-## getCurrentOrg
-
-> Organization getCurrentOrg()
-
-Get current organization
-
-Get the organization associated with the API key
-
-### Example
-
-```ts
-import {
-  Configuration,
-  OrganizationsApi,
-} from '';
-import type { GetCurrentOrgRequest } from '';
-
-async function example() {
-  console.log("🚀 Testing  SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ApiKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new OrganizationsApi(config);
-
-  try {
-    const data = await api.getCurrentOrg();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// Run the test
-example().catch(console.error);
-```
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**Organization**](Organization.md)
-
-### Authorization
-
-[ApiKeyAuth](../README.md#ApiKeyAuth)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: `application/json`
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | Organization details |  -  |
-| **401** | Unauthorized |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-
 ## getOrgUsers
 
-> GetOrgUsers200Response getOrgUsers(orgId)
+> GetOrgUsers200Response getOrgUsers()
 
 List organization users
 
-Get users who are members of the organization.
+Get users who are members of the authenticated user\&#39;s organization. The organization is derived from the API key context.
 
 ### Example
 
@@ -258,13 +187,8 @@ async function example() {
   });
   const api = new OrganizationsApi(config);
 
-  const body = {
-    // string
-    orgId: 65ae1234567890abcdef1234,
-  } satisfies GetOrgUsersRequest;
-
   try {
-    const data = await api.getOrgUsers(body);
+    const data = await api.getOrgUsers();
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -277,10 +201,7 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **orgId** | `string` |  | [Defaults to `undefined`] |
+This endpoint does not need any parameter.
 
 ### Return type
 
@@ -308,11 +229,11 @@ example().catch(console.error);
 
 ## listAPIKeys
 
-> Array&lt;APIKeyResponse&gt; listAPIKeys(orgId)
+> Array&lt;APIKeyResponse&gt; listAPIKeys()
 
 List API keys
 
-Get all API keys for an organization
+Get all API keys for the authenticated user\&#39;s organization. The organization is derived from the API key context.
 
 ### Example
 
@@ -331,13 +252,8 @@ async function example() {
   });
   const api = new OrganizationsApi(config);
 
-  const body = {
-    // string
-    orgId: 65ae1234567890abcdef1234,
-  } satisfies ListAPIKeysRequest;
-
   try {
-    const data = await api.listAPIKeys(body);
+    const data = await api.listAPIKeys();
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -350,10 +266,7 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **orgId** | `string` |  | [Defaults to `undefined`] |
+This endpoint does not need any parameter.
 
 ### Return type
 
@@ -380,11 +293,11 @@ example().catch(console.error);
 
 ## revokeAPIKey
 
-> SuccessResponse revokeAPIKey(orgId, keyId)
+> SuccessResponse revokeAPIKey(keyId)
 
 Revoke API key
 
-Delete/revoke an API key
+Delete/revoke an API key. The organization is derived from the API key context.
 
 ### Example
 
@@ -404,8 +317,6 @@ async function example() {
   const api = new OrganizationsApi(config);
 
   const body = {
-    // string
-    orgId: 65ae1234567890abcdef1234,
     // string
     keyId: 65ae1234567890abcdef1234,
   } satisfies RevokeAPIKeyRequest;
@@ -427,7 +338,6 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | `string` |  | [Defaults to `undefined`] |
 | **keyId** | `string` |  | [Defaults to `undefined`] |
 
 ### Return type
@@ -456,11 +366,11 @@ example().catch(console.error);
 
 ## touchAPIKey
 
-> SuccessResponse touchAPIKey(orgId, keyId)
+> SuccessResponse touchAPIKey(keyId)
 
 Touch API key
 
-Update the API key last-used timestamp.
+Update the API key last-used timestamp. The organization is derived from the API key context.
 
 ### Example
 
@@ -480,8 +390,6 @@ async function example() {
   const api = new OrganizationsApi(config);
 
   const body = {
-    // string
-    orgId: 65ae1234567890abcdef1234,
     // string
     keyId: 65ae1234567890abcdef1234,
   } satisfies TouchAPIKeyRequest;
@@ -503,7 +411,6 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **orgId** | `string` |  | [Defaults to `undefined`] |
 | **keyId** | `string` |  | [Defaults to `undefined`] |
 
 ### Return type

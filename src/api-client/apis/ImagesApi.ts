@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * VoidRun API
- * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` and `/api/version` require the `X-API-Key` header for authentication. 
+ * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/version` require the `X-API-Key` header for authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -15,29 +15,15 @@
 
 import * as runtime from '../runtime';
 import type {
-  CreateImageRequest,
   ErrorResponse,
   Image,
-  SuccessResponse,
 } from '../models/index';
 import {
-    CreateImageRequestFromJSON,
-    CreateImageRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
     ImageFromJSON,
     ImageToJSON,
-    SuccessResponseFromJSON,
-    SuccessResponseToJSON,
 } from '../models/index';
-
-export interface CreateImageOperationRequest {
-    createImageRequest: CreateImageRequest;
-}
-
-export interface DeleteImageRequest {
-    id: string;
-}
 
 export interface GetImageRequest {
     id: string;
@@ -51,94 +37,6 @@ export interface GetImageByNameRequest {
  * 
  */
 export class ImagesApi extends runtime.BaseAPI {
-
-    /**
-     * Create or register a new base image
-     * Create image
-     */
-    async createImageRaw(requestParameters: CreateImageOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Image>> {
-        if (requestParameters['createImageRequest'] == null) {
-            throw new runtime.RequiredError(
-                'createImageRequest',
-                'Required parameter "createImageRequest" was null or undefined when calling createImage().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key"); // ApiKeyAuth authentication
-        }
-
-
-        let urlPath = `/images`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CreateImageRequestToJSON(requestParameters['createImageRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ImageFromJSON(jsonValue));
-    }
-
-    /**
-     * Create or register a new base image
-     * Create image
-     */
-    async createImage(requestParameters: CreateImageOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Image> {
-        const response = await this.createImageRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Delete a base image
-     * Delete image
-     */
-    async deleteImageRaw(requestParameters: DeleteImageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling deleteImage().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key"); // ApiKeyAuth authentication
-        }
-
-
-        let urlPath = `/images/{id}`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Delete a base image
-     * Delete image
-     */
-    async deleteImage(requestParameters: DeleteImageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.deleteImageRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
 
     /**
      * Get detailed information about a specific image

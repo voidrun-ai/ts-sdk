@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * VoidRun API
- * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` and `/api/version` require the `X-API-Key` header for authentication. 
+ * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/version` require the `X-API-Key` header for authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -20,13 +20,7 @@ import { mapValues } from '../runtime';
  */
 export interface GenerateAPIKeyRequest {
     /**
-     * 
-     * @type {string}
-     * @memberof GenerateAPIKeyRequest
-     */
-    orgId: string;
-    /**
-     * 
+     * A descriptive name for the API key
      * @type {string}
      * @memberof GenerateAPIKeyRequest
      */
@@ -37,7 +31,6 @@ export interface GenerateAPIKeyRequest {
  * Check if a given object implements the GenerateAPIKeyRequest interface.
  */
 export function instanceOfGenerateAPIKeyRequest(value: object): value is GenerateAPIKeyRequest {
-    if (!('orgId' in value) || value['orgId'] === undefined) return false;
     if (!('keyName' in value) || value['keyName'] === undefined) return false;
     return true;
 }
@@ -52,7 +45,6 @@ export function GenerateAPIKeyRequestFromJSONTyped(json: any, ignoreDiscriminato
     }
     return {
         
-        'orgId': json['orgId'],
         'keyName': json['keyName'],
     };
 }
@@ -68,7 +60,6 @@ export function GenerateAPIKeyRequestToJSONTyped(value?: GenerateAPIKeyRequest |
 
     return {
         
-        'orgId': value['orgId'],
         'keyName': value['keyName'],
     };
 }

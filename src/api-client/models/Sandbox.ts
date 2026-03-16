@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * VoidRun API
- * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` and `/api/version` require the `X-API-Key` header for authentication. 
+ * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/version` require the `X-API-Key` header for authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -32,29 +32,29 @@ export interface Sandbox {
      */
     name?: string;
     /**
-     * 
+     * Image name or ID used to create the sandbox
      * @type {string}
      * @memberof Sandbox
      */
-    imageId?: string;
+    image?: string;
     /**
-     * 
-     * @type {string}
-     * @memberof Sandbox
-     */
-    ip?: string;
-    /**
-     * 
+     * Number of vCPUs allocated
      * @type {number}
      * @memberof Sandbox
      */
     cpu?: number;
     /**
-     * 
+     * Memory in MiB
      * @type {number}
      * @memberof Sandbox
      */
     mem?: number;
+    /**
+     * Disk size in MiB
+     * @type {number}
+     * @memberof Sandbox
+     */
+    diskMB?: number;
     /**
      * 
      * @type {string}
@@ -68,23 +68,41 @@ export interface Sandbox {
      */
     createdAt?: Date;
     /**
-     * 
+     * User ID who created the sandbox
      * @type {string}
      * @memberof Sandbox
      */
     createdBy?: string;
     /**
-     * 
+     * Organization ID the sandbox belongs to
      * @type {string}
      * @memberof Sandbox
      */
     orgId?: string;
     /**
-     * Environment variables set on the sandbox
+     * Environment variables set on the sandbox (optional, only present if configured)
      * @type {{ [key: string]: string; }}
      * @memberof Sandbox
      */
     envVars?: { [key: string]: string; };
+    /**
+     * Indicates if auto-pause is disabled
+     * @type {boolean}
+     * @memberof Sandbox
+     */
+    disablePause?: boolean;
+    /**
+     * Region where the sandbox is hosted
+     * @type {string}
+     * @memberof Sandbox
+     */
+    region?: string;
+    /**
+     * External reference ID
+     * @type {string}
+     * @memberof Sandbox
+     */
+    refId?: string;
 }
 
 
@@ -119,15 +137,18 @@ export function SandboxFromJSONTyped(json: any, ignoreDiscriminator: boolean): S
         
         'id': json['id'] == null ? undefined : json['id'],
         'name': json['name'] == null ? undefined : json['name'],
-        'imageId': json['imageId'] == null ? undefined : json['imageId'],
-        'ip': json['ip'] == null ? undefined : json['ip'],
+        'image': json['image'] == null ? undefined : json['image'],
         'cpu': json['cpu'] == null ? undefined : json['cpu'],
         'mem': json['mem'] == null ? undefined : json['mem'],
+        'diskMB': json['diskMB'] == null ? undefined : json['diskMB'],
         'status': json['status'] == null ? undefined : json['status'],
         'createdAt': json['createdAt'] == null ? undefined : (new Date(json['createdAt'])),
         'createdBy': json['createdBy'] == null ? undefined : json['createdBy'],
         'orgId': json['orgId'] == null ? undefined : json['orgId'],
         'envVars': json['envVars'] == null ? undefined : json['envVars'],
+        'disablePause': json['disablePause'] == null ? undefined : json['disablePause'],
+        'region': json['region'] == null ? undefined : json['region'],
+        'refId': json['refId'] == null ? undefined : json['refId'],
     };
 }
 
@@ -144,15 +165,18 @@ export function SandboxToJSONTyped(value?: Sandbox | null, ignoreDiscriminator: 
         
         'id': value['id'],
         'name': value['name'],
-        'imageId': value['imageId'],
-        'ip': value['ip'],
+        'image': value['image'],
         'cpu': value['cpu'],
         'mem': value['mem'],
+        'diskMB': value['diskMB'],
         'status': value['status'],
         'createdAt': value['createdAt'] == null ? value['createdAt'] : value['createdAt'].toISOString(),
         'createdBy': value['createdBy'],
         'orgId': value['orgId'],
         'envVars': value['envVars'],
+        'disablePause': value['disablePause'],
+        'region': value['region'],
+        'refId': value['refId'],
     };
 }
 

@@ -8,15 +8,18 @@ Name | Type
 ------------ | -------------
 `id` | string
 `name` | string
-`imageId` | string
-`ip` | string
+`image` | string
 `cpu` | number
 `mem` | number
+`diskMB` | number
 `status` | string
 `createdAt` | Date
 `createdBy` | string
 `orgId` | string
 `envVars` | { [key: string]: string; }
+`disablePause` | boolean
+`region` | string
+`refId` | string
 
 ## Example
 
@@ -27,15 +30,18 @@ import type { Sandbox } from ''
 const example = {
   "id": 65ae1234567890abcdef1234,
   "name": vm-01,
-  "imageId": 65ae1234567890abcdef1234,
-  "ip": 192.168.1.100,
+  "image": debian,
   "cpu": 2,
   "mem": 2048,
+  "diskMB": 5120,
   "status": running,
   "createdAt": null,
   "createdBy": 65ae1234567890abcdef1234,
   "orgId": 65ae1234567890abcdef1234,
   "envVars": {"DEBUG":"true","LOG_LEVEL":"info"},
+  "disablePause": false,
+  "region": us-east-1,
+  "refId": ref-123456,
 } satisfies Sandbox
 
 console.log(example)

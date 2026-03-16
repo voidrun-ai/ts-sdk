@@ -225,19 +225,31 @@ export class CodeInterpreter {
                     const tempFile = `/tmp/code_${timestamp}.py`;
                     const writeCmd = `cat > ${tempFile} << 'EOFPYTHON'\n${code}\nEOFPYTHON`;
                     return { 
-                        command: `${writeCmd} && python3 ${tempFile} && rm -f ${tempFile}`,
+                        command: `${writeCmd}\npython3 ${tempFile} && rm -f ${tempFile}`,
                         tempFile 
                     };
                 }
             }
             
             case 'javascript':
-            case 'node':
+            case 'node': {
+                if (code.length < 1000 && !code.includes('\n\n')) {
+                    const escapedCode = code.replace(/'/g, "'\\''");
+                    return { command: `node -e '${escapedCode}'` };
+                }
+                const tempFile = `/tmp/code_${timestamp}.js`;
+                const writeCmd = `cat > ${tempFile} << 'EOFJS'\n${code}\nEOFJS`;
+                return {
+                    command: `${writeCmd}\nnode ${tempFile} && rm -f ${tempFile}`,
+                    tempFile
+                };
+            }
+            
             case 'typescript': {
                 const tempFile = `/tmp/code_${timestamp}.js`;
                 const writeCmd = `cat > ${tempFile} << 'EOFJS'\n${code}\nEOFJS`;
                 return {
-                    command: `${writeCmd} && node ${tempFile} && rm -f ${tempFile}`,
+                    command: `${writeCmd}\nnode ${tempFile} && rm -f ${tempFile}`,
                     tempFile
                 };
             }
@@ -247,7 +259,7 @@ export class CodeInterpreter {
                 const escapedCode = code.replace(/'/g, "'\\''");
                 return { command: `bash -c '${escapedCode}'` };
             }
-            
+
             default:
                 throw new Error(`Unsupported language: ${language}`);
         }

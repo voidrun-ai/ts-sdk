@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * VoidRun API
- * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/register` and `/api/version` require the `X-API-Key` header for authentication. 
+ * VoidRun API provides comprehensive management of virtual machines (sandboxes),  file system operations, execution environments, and organizational resources.  All endpoints except `/api/version` require the `X-API-Key` header for authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -42,7 +42,7 @@ export interface GetOrgUsers200ResponseAllOfDataInner {
      * @type {string}
      * @memberof GetOrgUsers200ResponseAllOfDataInner
      */
-    role?: string;
+    imageUrl?: string;
     /**
      * 
      * @type {Date}
@@ -71,7 +71,7 @@ export function GetOrgUsers200ResponseAllOfDataInnerFromJSONTyped(json: any, ign
         'id': json['id'] == null ? undefined : json['id'],
         'name': json['name'] == null ? undefined : json['name'],
         'email': json['email'] == null ? undefined : json['email'],
-        'role': json['role'] == null ? undefined : json['role'],
+        'imageUrl': json['imageUrl'] == null ? undefined : json['imageUrl'],
         'createdAt': json['createdAt'] == null ? undefined : (new Date(json['createdAt'])),
     };
 }
@@ -90,7 +90,7 @@ export function GetOrgUsers200ResponseAllOfDataInnerToJSONTyped(value?: GetOrgUs
         'id': value['id'],
         'name': value['name'],
         'email': value['email'],
-        'role': value['role'],
+        'imageUrl': value['imageUrl'],
         'createdAt': value['createdAt'] == null ? value['createdAt'] : value['createdAt'].toISOString(),
     };
 }
