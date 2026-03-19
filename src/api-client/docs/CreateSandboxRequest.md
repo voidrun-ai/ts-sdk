@@ -14,7 +14,7 @@ Name | Type
 `userId` | string
 `sync` | boolean
 `envVars` | { [key: string]: string; }
-`disablePause` | boolean
+`autoSleep` | boolean
 `region` | string
 `refId` | string
 
@@ -33,7 +33,7 @@ const example = {
   "userId": 65ae1234567890abcdef1234,
   "sync": true,
   "envVars": {"DEBUG":"true","LOG_LEVEL":"info"},
-  "disablePause": false,
+  "autoSleep": true,
   "region": eu,
   "refId": ftr4dr,
 } satisfies CreateSandboxRequest

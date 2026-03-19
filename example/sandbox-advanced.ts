@@ -12,9 +12,7 @@ async function main() {
     
     const sandbox = await vr.createSandbox({
         name: sandboxName,
-        region: "us",
-        refId: refId,
-        disablePause: true,
+        autoSleep: false,
         envVars: {
             "APP_ENV": "production",
             "DEBUG": "false"
@@ -30,7 +28,7 @@ async function main() {
         // @ts-ignore
         console.log(`- RefID: ${(sandbox as any).refId}`);
         // @ts-ignore
-        console.log(`- DisablePause: ${(sandbox as any).disablePause}`);
+        console.log(`- AutoSleep: ${(sandbox as any).autoSleep}`);
 
         console.log("\n--- Pagination Test ---");
         console.log("Listing sandboxes (page 1, limit 2)...");

@@ -17,7 +17,7 @@ Name | Type
 `createdBy` | string
 `orgId` | string
 `envVars` | { [key: string]: string; }
-`disablePause` | boolean
+`autoSleep` | boolean
 `region` | string
 `refId` | string
 
@@ -39,7 +39,7 @@ const example = {
   "createdBy": 65ae1234567890abcdef1234,
   "orgId": 65ae1234567890abcdef1234,
   "envVars": {"DEBUG":"true","LOG_LEVEL":"info"},
-  "disablePause": false,
+  "autoSleep": true,
   "region": us-east-1,
   "refId": ref-123456,
 } satisfies Sandbox

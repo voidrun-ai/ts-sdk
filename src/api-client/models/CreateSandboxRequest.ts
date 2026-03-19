@@ -68,11 +68,11 @@ export interface CreateSandboxRequest {
      */
     envVars?: { [key: string]: string; };
     /**
-     * If true, the sandbox will not be auto-paused due to inactivity
+     * If true, the sandbox will be auto-paused due to inactivity
      * @type {boolean}
      * @memberof CreateSandboxRequest
      */
-    disablePause?: boolean;
+    autoSleep?: boolean;
     /**
      * Target region for the sandbox
      * @type {string}
@@ -113,7 +113,7 @@ export function CreateSandboxRequestFromJSONTyped(json: any, ignoreDiscriminator
         'userId': json['userId'] == null ? undefined : json['userId'],
         'sync': json['sync'] == null ? undefined : json['sync'],
         'envVars': json['envVars'] == null ? undefined : json['envVars'],
-        'disablePause': json['disablePause'] == null ? undefined : json['disablePause'],
+        'autoSleep': json['autoSleep'] == null ? undefined : json['autoSleep'],
         'region': json['region'] == null ? undefined : json['region'],
         'refId': json['refId'] == null ? undefined : json['refId'],
     };
@@ -138,7 +138,7 @@ export function CreateSandboxRequestToJSONTyped(value?: CreateSandboxRequest | n
         'userId': value['userId'],
         'sync': value['sync'],
         'envVars': value['envVars'],
-        'disablePause': value['disablePause'],
+        'autoSleep': value['autoSleep'],
         'region': value['region'],
         'refId': value['refId'],
     };

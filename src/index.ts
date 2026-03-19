@@ -49,7 +49,7 @@ export class VoidRun {
 
 
     async createSandbox(options: SandboxOptions) {
-        const { name, cpu, mem, orgId, image, sync, userId, envVars, disablePause, region, refId } = options;
+        const { name, cpu, mem, orgId, image, sync, userId, envVars, autoSleep, region, refId } = options;
 
         const response = await wrapRequest<CreateSandbox201Response>(this.sandboxesApi.createSandbox({
             createSandboxRequest: {
@@ -61,7 +61,7 @@ export class VoidRun {
                 sync: sync ?? true,
                 userId: userId || '',
                 envVars: envVars,
-                disablePause: disablePause,
+                autoSleep: autoSleep,
                 region: region,
                 refId: refId
             }

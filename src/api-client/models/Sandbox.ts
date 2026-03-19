@@ -86,11 +86,11 @@ export interface Sandbox {
      */
     envVars?: { [key: string]: string; };
     /**
-     * Indicates if auto-pause is disabled
+     * Indicates if auto-sleep is enabled
      * @type {boolean}
      * @memberof Sandbox
      */
-    disablePause?: boolean;
+    autoSleep?: boolean;
     /**
      * Region where the sandbox is hosted
      * @type {string}
@@ -146,7 +146,7 @@ export function SandboxFromJSONTyped(json: any, ignoreDiscriminator: boolean): S
         'createdBy': json['createdBy'] == null ? undefined : json['createdBy'],
         'orgId': json['orgId'] == null ? undefined : json['orgId'],
         'envVars': json['envVars'] == null ? undefined : json['envVars'],
-        'disablePause': json['disablePause'] == null ? undefined : json['disablePause'],
+        'autoSleep': json['autoSleep'] == null ? undefined : json['autoSleep'],
         'region': json['region'] == null ? undefined : json['region'],
         'refId': json['refId'] == null ? undefined : json['refId'],
     };
@@ -174,7 +174,7 @@ export function SandboxToJSONTyped(value?: Sandbox | null, ignoreDiscriminator: 
         'createdBy': value['createdBy'],
         'orgId': value['orgId'],
         'envVars': value['envVars'],
-        'disablePause': value['disablePause'],
+        'autoSleep': value['autoSleep'],
         'region': value['region'],
         'refId': value['refId'],
     };

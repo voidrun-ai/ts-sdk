@@ -10,7 +10,7 @@ export type SandboxOptions = {
     envVars?: Record<string, string>;
     autoStopAfterMinutes?: number;
     autoDeleteAfterMinutes?: number;
-    disablePause?: boolean;
+    autoSleep?: boolean;
     region?: string;
     refId?: string;
 }

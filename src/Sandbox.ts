@@ -19,7 +19,7 @@ export default class VRSandbox {
     public readonly envVars?: { [key: string]: string };
     public readonly region?: string;
     public readonly refId?: string;
-    public readonly disablePause?: boolean;
+    public readonly autoSleep?: boolean;
     public readonly fs: FS;
     public readonly pty: PTY;
     public readonly interpreter: CodeInterpreter;
@@ -68,7 +68,7 @@ export default class VRSandbox {
         this.envVars = sandbox.envVars;
         this.region = sandbox.region;
         this.refId = sandbox.refId;
-        this.disablePause = sandbox.disablePause;
+        this.autoSleep = sandbox.autoSleep;
         this.config = config;
         this.fs = new FS(sandbox.id, config);
         this.pty = new PTY(sandbox.id, config);
