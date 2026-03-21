@@ -131,6 +131,98 @@ print(analyze_temperatures(generate_sensor_data(500)))
             process.exit(1);
         }
 
+        console.log('\n--- Testing Complex TypeScript Code (>1000 chars) ---');
+        console.log('Scenario: Complex Data Processing with Types');
+
+        const largeTS = `
+/**
+ * Complex Data Processing Engine
+ * This script processes a list of transactions, grouping them by currency,
+ * and performing currency conversions based on mock exchange rates.
+ */
+
+interface Transaction {
+    id: string;
+    amount: number;
+    currency: string;
+    date: Date;
+    type: 'CREDIT' | 'DEBIT';
+}
+
+interface ExchangeRates {
+    [currency: string]: number;
+}
+
+const RATES: ExchangeRates = {
+    'USD': 1.0,
+    'EUR': 0.85,
+    'GBP': 0.75,
+    'JPY': 110.0,
+};
+
+function generateTransactions(count: number): Transaction[] {
+    const currencies = Object.keys(RATES);
+    const types: ('CREDIT' | 'DEBIT')[] = ['CREDIT', 'DEBIT'];
+    const transactions: Transaction[] = [];
+    
+    for (let i = 0; i < count; i++) {
+        transactions.push({
+            id: \`TXN-\${i.toString().padStart(5, '0')}\`,
+            amount: Math.round(Math.random() * 10000) / 100,
+            currency: currencies[Math.floor(Math.random() * currencies.length)],
+            date: new Date(Date.now() - Math.random() * 10000000000),
+            type: types[Math.floor(Math.random() * types.length)],
+        });
+    }
+    return transactions;
+}
+
+function processTransactions(transactions: Transaction[], targetCurrency: string = 'USD') {
+    let totalCredit = 0;
+    let totalDebit = 0;
+    
+    // Some complex processing to ensure the length is > 1000 chars
+    // We will iterate over the transactions, compute the converted amounts,
+    // and aggregate the totals for credit and debit separatedly.
+    
+    for (const txn of transactions) {
+        const rate = RATES[txn.currency];
+        const targetRate = RATES[targetCurrency];
+        
+        // Convert to USD first, then to target currency
+        const amountInUSD = txn.amount / rate;
+        const convertedAmount = amountInUSD * targetRate;
+        
+        if (txn.type === 'CREDIT') {
+            totalCredit += convertedAmount;
+        } else {
+            totalDebit += convertedAmount;
+        }
+    }
+    
+    console.log(\`--- Processed \${transactions.length} Transactions ---\`);
+    console.log(\`Total Credit: \${totalCredit.toFixed(2)} \${targetCurrency}\`);
+    console.log(\`Total Debit:  \${totalDebit.toFixed(2)} \${targetCurrency}\`);
+    console.log(\`Net Balance:  \${(totalCredit - totalDebit).toFixed(2)} \${targetCurrency}\`);
+    
+    return transactions.length;
+}
+
+const txns = generateTransactions(250);
+console.log(processTransactions(txns, 'EUR'));
+`;
+
+        console.log(`TS Code length: ${largeTS.length} characters`);
+        result = await sdbx.runCode(largeTS, { language: 'typescript' });
+        console.log('Stdout output:\n', result.stdout.trim());
+
+        if (result.stdout.includes("Processed 250 Transactions") && result.results === 250) {
+            console.log("✅ Complex TypeScript execution PASS");
+        } else {
+            console.log("❌ Complex TypeScript execution FAIL");
+            process.exit(1);
+        }
+
     } catch (error) {
         console.error('Test execution failed:', error);
         process.exit(1);

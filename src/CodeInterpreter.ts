@@ -246,10 +246,14 @@ export class CodeInterpreter {
             }
             
             case 'typescript': {
-                const tempFile = `/tmp/code_${timestamp}.js`;
-                const writeCmd = `cat > ${tempFile} << 'EOFJS'\n${code}\nEOFJS`;
+                if (code.length < 1000 && !code.includes('\n\n')) {
+                    const escapedCode = code.replace(/'/g, "'\\''");
+                    return { command: `tsx -e '${escapedCode}'` };
+                }
+                const tempFile = `/tmp/code_${timestamp}.ts`;
+                const writeCmd = `cat > ${tempFile} << 'EOFTS'\n${code}\nEOFTS`;
                 return {
-                    command: `${writeCmd}\nnode ${tempFile} && rm -f ${tempFile}`,
+                    command: `${writeCmd}\ntsx ${tempFile} && rm -f ${tempFile}`,
                     tempFile
                 };
             }
