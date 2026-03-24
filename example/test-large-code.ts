@@ -1,18 +1,18 @@
-import { VoidRun } from "../src/index.js";
+import { VoidRun } from '../src/index.js';
 
 async function main() {
-    const vr = new VoidRun({});
+  const vr = new VoidRun({});
 
-    console.log('Creating sandbox for large code tests...');
-    const sdbx = await vr.createSandbox({
-        name: 'test-large-code'
-    });
+  console.log('Creating sandbox for large code tests...');
+  const sdbx = await vr.createSandbox({
+    name: 'test-large-code',
+  });
 
-    try {
-        console.log('\n--- Testing Complex JavaScript Code (>1000 chars) ---');
-        console.log('Scenario: Stock Market Simulation with Volatility');
-        
-        const largeJS = `
+  try {
+    console.log('\n--- Testing Complex JavaScript Code (>1000 chars) ---');
+    console.log('Scenario: Stock Market Simulation with Volatility');
+
+    const largeJS = `
 /**
  * Simulated Stock Market Engine
  * This script simulates the price movements of multiple stocks over a period of time
@@ -62,26 +62,29 @@ function runSimulation(days) {
 console.log(runSimulation(30));
 `;
 
-        console.log(`JS Code length: ${largeJS.length} characters`);
-        let result = await sdbx.runCode(largeJS, { language: 'javascript' });
-        console.log('Stdout output:\n', result.stdout.trim());
-        
-        if (result.stdout.includes("30-Day Market Simulation") && result.results === 4) {
-            console.log("✅ Complex JS execution PASS");
-        } else {
-            console.log("❌ Complex JS execution FAIL");
-            process.exit(1);
-        }
+    console.log(`JS Code length: ${largeJS.length} characters`);
+    let result = await sdbx.runCode(largeJS, { language: 'javascript' });
+    console.log('Stdout output:\n', result.stdout.trim());
 
-        console.log('\n--- Testing Complex Python Code (>1000 chars) ---');
-        console.log('Scenario: Climate Data Statistical Analysis');
+    if (
+      result.stdout.includes('30-Day Market Simulation') &&
+      result.results === 4
+    ) {
+      console.log('✅ Complex JS execution PASS');
+    } else {
+      console.log('❌ Complex JS execution FAIL');
+      process.exit(1);
+    }
 
-        const largePy = `
-\"\"\"
+    console.log('\n--- Testing Complex Python Code (>1000 chars) ---');
+    console.log('Scenario: Climate Data Statistical Analysis');
+
+    const largePy = `
+"""
 Climate Data Analysis Tool
 This script simulates processing a large set of daily temperature readings
 and calculates statistical metrics including moving averages and anomalies.
-\"\"\"
+"""
 
 import random
 
@@ -120,21 +123,24 @@ def analyze_temperatures(data):
 print(analyze_temperatures(generate_sensor_data(500)))
 `;
 
-        console.log(`Python Code length: ${largePy.length} characters`);
-        result = await sdbx.runCode(largePy, { language: 'python' });
-        console.log('Stdout output:\n', result.stdout.trim());
+    console.log(`Python Code length: ${largePy.length} characters`);
+    result = await sdbx.runCode(largePy, { language: 'python' });
+    console.log('Stdout output:\n', result.stdout.trim());
 
-        if (result.stdout.includes("Processed 500 Days") && result.results === 500) {
-            console.log("✅ Complex Python execution PASS");
-        } else {
-            console.log("❌ Complex Python execution FAIL");
-            process.exit(1);
-        }
+    if (
+      result.stdout.includes('Processed 500 Days') &&
+      result.results === 500
+    ) {
+      console.log('✅ Complex Python execution PASS');
+    } else {
+      console.log('❌ Complex Python execution FAIL');
+      process.exit(1);
+    }
 
-        console.log('\n--- Testing Complex TypeScript Code (>1000 chars) ---');
-        console.log('Scenario: Complex Data Processing with Types');
+    console.log('\n--- Testing Complex TypeScript Code (>1000 chars) ---');
+    console.log('Scenario: Complex Data Processing with Types');
 
-        const largeTS = `
+    const largeTS = `
 /**
  * Complex Data Processing Engine
  * This script processes a list of transactions, grouping them by currency,
@@ -212,25 +218,27 @@ const txns = generateTransactions(250);
 console.log(processTransactions(txns, 'EUR'));
 `;
 
-        console.log(`TS Code length: ${largeTS.length} characters`);
-        result = await sdbx.runCode(largeTS, { language: 'typescript' });
-        console.log('Stdout output:\n', result.stdout.trim());
+    console.log(`TS Code length: ${largeTS.length} characters`);
+    result = await sdbx.runCode(largeTS, { language: 'typescript' });
+    console.log('Stdout output:\n', result.stdout.trim());
 
-        if (result.stdout.includes("Processed 250 Transactions") && result.results === 250) {
-            console.log("✅ Complex TypeScript execution PASS");
-        } else {
-            console.log("❌ Complex TypeScript execution FAIL");
-            process.exit(1);
-        }
-
-    } catch (error) {
-        console.error('Test execution failed:', error);
-        process.exit(1);
-    } finally {
-        console.log('\nRemoving sandbox...');
-        await sdbx.remove();
-        console.log('Done.');
+    if (
+      result.stdout.includes('Processed 250 Transactions') &&
+      result.results === 250
+    ) {
+      console.log('✅ Complex TypeScript execution PASS');
+    } else {
+      console.log('❌ Complex TypeScript execution FAIL');
+      process.exit(1);
     }
+  } catch (error) {
+    console.error('Test execution failed:', error);
+    process.exit(1);
+  } finally {
+    console.log('\nRemoving sandbox...');
+    await sdbx.remove();
+    console.log('Done.');
+  }
 }
 
 main().catch(console.error);
