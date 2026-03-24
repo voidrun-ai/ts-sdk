@@ -171,7 +171,6 @@ export class FS {
         return {
           ...requestContext.init,
           body: stream, // Override with the actual stream
-          // @ts-expect-error - duplex is required for streaming in Node.js fetch
           duplex: 'half', // Required for Node.js fetch API with streams
           headers: {
             ...requestContext.init.headers,
