@@ -51,7 +51,7 @@ async function main() {
         // console.log('\nActive sessions:', sessions);
 
         const firstSessionId = (sessions as any)[0]?.id;
-        // pty.close();
+        pty.close();
 
         // if (sessionId) {
         //     console.log('\nDeleting session:', sessionId);
