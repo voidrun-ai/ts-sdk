@@ -18,7 +18,13 @@ function fixEsmImports(filePath) {
 
   content = content.replace(
     /from\s+['"](\.[^'"]+(?<!\.js|\.mjs|\.cjs|\.json|\.d\.ts))['"];/g,
-    (match, importPath) => `from '${importPath}.js';`,
+    (match, importPath) => {
+      const targetPath = path.join(path.dirname(filePath), importPath);
+      if (fs.existsSync(targetPath) && fs.statSync(targetPath).isDirectory()) {
+        return `from '${importPath}/index.js';`;
+      }
+      return `from '${importPath}.js';`;
+    },
   );
 
   if (content !== oldContent) {
