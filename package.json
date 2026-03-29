@@ -1,6 +1,6 @@
 {
   "name": "@voidrun/sdk",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "description": "VoidRun AI Sandbox SDK",
   "type": "module",
   "main": "./dist/cjs/index.cjs",
