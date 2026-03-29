@@ -21,6 +21,10 @@ function updateImports(filePath) {
   // Also handle mapped imports like require("./api-client")
   content = content.replace(/require\(["'](\.[^"']+)["']\)/g, (match, p1) => {
     if (!p1.endsWith('.cjs') && !p1.endsWith('.d.ts')) {
+      const targetPath = path.join(path.dirname(filePath), p1);
+      if (fs.existsSync(targetPath) && fs.statSync(targetPath).isDirectory()) {
+        return `require("${p1}/index.cjs")`;
+      }
       return `require("${p1}.cjs")`;
     }
     return match;
