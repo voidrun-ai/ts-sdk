@@ -18,7 +18,8 @@ export async function wrapRequest<T>(promise: Promise<T>): Promise<T> {
 
       try {
         const errorBody = await err.response.json();
-        bodyMessage = errorBody?.error || errorBody?.message;
+        const { error = '', details = '', message = '' } = errorBody;
+        bodyMessage = [error, details, message].filter(Boolean).join('. ');
       } catch {
         try {
           const errorText = await err.response.text();

@@ -26,7 +26,7 @@ import type { CreateSandboxRequest } from ''
 // TODO: Update the object below with actual values
 const example = {
   "name": vm-01,
-  "image": debian,
+  "image": code,
   "cpu": 2,
   "mem": 2048,
   "orgId": 65ae1234567890abcdef1234,

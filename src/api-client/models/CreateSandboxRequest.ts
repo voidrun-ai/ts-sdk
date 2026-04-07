@@ -26,7 +26,7 @@ export interface CreateSandboxRequest {
      */
     name: string;
     /**
-     * 
+     * Image name in `name:ver` or `name` format. If omitted, defaults to the latest active `code` image.
      * @type {string}
      * @memberof CreateSandboxRequest
      */

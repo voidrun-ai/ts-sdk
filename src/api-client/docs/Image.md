@@ -9,7 +9,9 @@ Name | Type
 `id` | string
 `name` | string
 `tag` | string
+`sizeGB` | number
 `system` | boolean
+`active` | boolean
 `orgId` | string
 `createdAt` | Date
 `createdBy` | string
@@ -24,7 +26,9 @@ const example = {
   "id": 65ae1234567890abcdef1234,
   "name": ubuntu-22.04,
   "tag": latest,
+  "sizeGB": 20,
   "system": false,
+  "active": true,
   "orgId": 65ae1234567890abcdef1234,
   "createdAt": null,
   "createdBy": 65ae1234567890abcdef1234,

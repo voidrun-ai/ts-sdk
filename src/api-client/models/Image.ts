@@ -38,11 +38,23 @@ export interface Image {
      */
     tag?: string;
     /**
+     * Virtual size in GB
+     * @type {number}
+     * @memberof Image
+     */
+    sizeGB?: number;
+    /**
      * 
      * @type {boolean}
      * @memberof Image
      */
     system?: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof Image
+     */
+    active?: boolean;
     /**
      * 
      * @type {string}
@@ -80,10 +92,12 @@ export function ImageFromJSONTyped(json: any, ignoreDiscriminator: boolean): Ima
     }
     return {
         
-        'id': json['_id'] == null ? undefined : json['_id'],
+        'id': json['id'] == null ? undefined : json['id'],
         'name': json['name'] == null ? undefined : json['name'],
         'tag': json['tag'] == null ? undefined : json['tag'],
+        'sizeGB': json['sizeGB'] == null ? undefined : json['sizeGB'],
         'system': json['system'] == null ? undefined : json['system'],
+        'active': json['active'] == null ? undefined : json['active'],
         'orgId': json['orgId'] == null ? undefined : json['orgId'],
         'createdAt': json['createdAt'] == null ? undefined : (new Date(json['createdAt'])),
         'createdBy': json['createdBy'] == null ? undefined : json['createdBy'],
@@ -101,10 +115,12 @@ export function ImageToJSONTyped(value?: Image | null, ignoreDiscriminator: bool
 
     return {
         
-        '_id': value['id'],
+        'id': value['id'],
         'name': value['name'],
         'tag': value['tag'],
+        'sizeGB': value['sizeGB'],
         'system': value['system'],
+        'active': value['active'],
         'orgId': value['orgId'],
         'createdAt': value['createdAt'] == null ? value['createdAt'] : value['createdAt'].toISOString(),
         'createdBy': value['createdBy'],

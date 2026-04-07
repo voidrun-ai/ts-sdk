@@ -90,7 +90,7 @@ export class VoidRun {
       this.sandboxesApi.createSandbox({
         createSandboxRequest: {
           name: name || 'sdbx-' + Date.now(),
-          image: image || constants.defaultTemplateId,
+          image: image || constants.defaultSandboxImage,
           cpu: cpu || constants.defaultSandboxCpu,
           mem: mem || constants.defaultSandboxMem,
           orgId: orgId || '',

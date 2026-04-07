@@ -30,7 +30,7 @@ import type { Sandbox } from ''
 const example = {
   "id": 65ae1234567890abcdef1234,
   "name": vm-01,
-  "image": debian,
+  "image": code:1.0.42,
   "cpu": 2,
   "mem": 2048,
   "diskMB": 5120,

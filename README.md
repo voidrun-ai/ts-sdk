@@ -64,7 +64,7 @@ const sandbox = await vr.createSandbox({
   name: "my-sandbox",       // Optional: Sandbox name
   mem: 1024,                // Memory in MB (optional, has defaults)
   cpu: 1,                   // CPU cores (optional, has defaults)
-  image: "template-id", // Optional: Image ID
+  image: "code",            // Optional: Image name. Valid values are code, code:1.42.4. Check dashboard for more system images
   envVars: {                // Optional: Environment variables
     DEBUG: 'true',
     LOG_LEVEL: 'info'

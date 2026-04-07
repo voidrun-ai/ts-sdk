@@ -32,7 +32,7 @@ export interface Sandbox {
      */
     name?: string;
     /**
-     * Image name or ID used to create the sandbox
+     * Resolved image in `name:ver` format
      * @type {string}
      * @memberof Sandbox
      */
