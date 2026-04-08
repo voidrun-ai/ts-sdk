@@ -60,7 +60,7 @@ yarn add @voidrun/sdk
 
 ## Configuration
 
-`VoidRun` requires an **API key**. **Base URL** is resolved from `process.env.VR_API_URL` or the built-in default `BASE_PATH` (see `src/api-client/runtime.ts` — typically `https://platform.void-run.com/api` without a trailing slash).
+`VoidRun` requires an **API key**. On the hosted platform the **base URL** defaults to **`BASE_PATH`** (see `src/api-client/runtime.ts`: `https://platform.void-run.com/api` without a trailing slash). Set **`VR_API_URL`** or pass **`baseUrl`** only when you target a **self-hosted** API.
 
 ```typescript
 import { VoidRun } from "@voidrun/sdk";
@@ -73,11 +73,11 @@ const vr = new VoidRun({
 | Environment variable | Purpose |
 |--------------------|---------|
 | `VR_API_KEY` | API key when not passed to the constructor. |
-| `VR_API_URL` | API base URL (overrides packaged default). |
+| `VR_API_URL` | *(Self-hosted only.)* Overrides the packaged default API base URL. |
 
 **`createSandbox` defaults** (when you omit fields) match the Python SDK: image `code`, **1** CPU, **1024** MB memory.
 
-For **self-hosted** VoidRun, set **`VR_API_URL`** to your instance’s API root (including `/api` if that is how your server is mounted).
+For **self-hosted** VoidRun, set **`VR_API_URL`** (or **`baseUrl`**) to your instance’s API root (including `/api` if that is how your server is mounted).
 
 ## Quick start
 
@@ -764,10 +764,10 @@ try {
 
 Common cases:
 
-- **Validation** — Invalid sandbox parameters for your org/plan
-- **Authentication** — Missing/invalid API key
-- **Not found** — Wrong sandbox or session id
-- **Timeout** — Network or long-running command limits
+- **Validation**: Invalid sandbox parameters for your org/plan
+- **Authentication**: Missing/invalid API key
+- **Not found**: Wrong sandbox or session id
+- **Timeout**: Network or long-running command limits
 
 ## Testing and examples runner
 
@@ -779,7 +779,7 @@ chmod +x scripts/run_all_examples.sh   # once
 ./scripts/run_all_examples.sh
 ```
 
-Each example is run with `npx tsx --env-file=.env <file>`. Create a **`.env`** with at least `VR_API_KEY=` (and `VR_API_URL=` if not using the default host). The script exits with status **1** if any example fails (suitable for CI).
+Each example is run with `npx tsx --env-file=.env <file>`. Create a **`.env`** with at least `VR_API_KEY=` (add **`VR_API_URL=`** only for self-hosted). The script exits with status **1** if any example fails (suitable for CI).
 
 Run a single script:
 
@@ -789,15 +789,15 @@ npx tsx --env-file=.env example/test-sandbox-exec.ts
 
 Notable scripts under `example/`:
 
-- `test-sandbox-exec.ts` — Command execution (incl. streaming)
-- `test-sandbox-fs.ts` — File system operations
-- `test-sandbox-lifecycle.ts` — Sandbox lifecycle
-- `test-pty.ts` / `test-pty-comprehensive.ts` — PTY
-- `test-watch.ts` — File watching
-- `test-background-exec.ts` — Background commands
-- `test-ts-exec.ts` — TypeScript via `runCode`
-- `code-interpreter-example.ts` — Interpreter workflow
-- `test-commonjs-import.cjs` / `test-esm-import.mjs` — Package exports
+- `test-sandbox-exec.ts`: Command execution (incl. streaming)
+- `test-sandbox-fs.ts`: File system operations
+- `test-sandbox-lifecycle.ts`: Sandbox lifecycle
+- `test-pty.ts` / `test-pty-comprehensive.ts`: PTY
+- `test-watch.ts`: File watching
+- `test-background-exec.ts`: Background commands
+- `test-ts-exec.ts`: TypeScript via `runCode`
+- `code-interpreter-example.ts`: Interpreter workflow
+- `test-commonjs-import.cjs` / `test-esm-import.mjs`: Package exports
 
 ## Building from source
 
@@ -819,7 +819,7 @@ npm run build
 npm publish --access public
 ```
 
-(`prepublishOnly` in `package.json` runs a clean build and bumps the patch version — adjust your release workflow if you do not want an automatic version bump.)
+(`prepublishOnly` in `package.json` runs a clean build and bumps the patch version: adjust your release workflow if you do not want an automatic version bump.)
 
 ## Troubleshooting
 
@@ -837,7 +837,7 @@ export VR_API_KEY="your-api-key"
 
 ### "Base URL is required"
 
-Set **`VR_API_URL`** to your API root. The constructor rejects an empty resolved base URL.
+The resolved base URL is empty (for example **`VR_API_URL=`** with no value). Omit it to use the default host, or set **`VR_API_URL`** / **`baseUrl`** to your self-hosted API root.
 
 ### "Sandbox creation failed"
 
