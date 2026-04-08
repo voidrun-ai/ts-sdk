@@ -1,33 +1,40 @@
-#!/bin/bash
-# /root/workspace/vr-work/ts-sdk/scripts/run_all_examples.sh
+#!/usr/bin/env bash
+# Run every script under example/ with ts-sdk/.env (same idea as py-sdk/scripts/run_all_examples.sh).
 
-# Ensure we are in the ts-sdk directory
+set -uo pipefail
+
 cd "$(dirname "$0")/.."
 
-# Get all files in the example directory
-EXAMPLES=$(ls example/*.ts example/*.cjs example/*.mjs 2>/dev/null)
+mapfile -t EXAMPLES < <(
+  find example -maxdepth 1 \( -name '*.ts' -o -name '*.cjs' -o -name '*.mjs' \) -type f | sort
+)
 
-if [ -z "$EXAMPLES" ]; then
+if [[ ${#EXAMPLES[@]} -eq 0 ]]; then
   echo "No examples found in example/ directory."
   exit 1
 fi
 
-for EX in $EXAMPLES; do
+FAILED=0
+for EX in "${EXAMPLES[@]}"; do
   echo "=================================================="
   echo "Running example: $EX"
   echo "=================================================="
-  
-  # Run the example using tsx and the .env file
-  npx tsx --env-file=.env "$EX"
-  
-  if [ $? -ne 0 ]; then
-    echo "--------------------------------------------------"
-    echo "❌ FAILED: $EX"
-    echo "--------------------------------------------------"
-  else
+  if npx tsx --env-file=.env "$EX"; then
     echo "--------------------------------------------------"
     echo "✅ SUCCESS: $EX"
+    echo "--------------------------------------------------"
+  else
+    FAILED=$((FAILED + 1))
+    echo "--------------------------------------------------"
+    echo "❌ FAILED: $EX"
     echo "--------------------------------------------------"
   fi
   echo ""
 done
+
+if [[ "$FAILED" -gt 0 ]]; then
+  echo "$FAILED example(s) failed."
+  exit 1
+fi
+
+echo "All examples passed."

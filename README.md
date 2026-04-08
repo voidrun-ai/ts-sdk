@@ -2,8 +2,32 @@
 
 A powerful, type-safe SDK for interacting with VoidRun AI Sandboxes. Execute code, manage files, watch file changes, and interact with pseudo-terminals in isolated environments.
 
+The public surface is aligned with the **[VoidRun Python SDK](https://pypi.org/project/voidrun/)** (`createSandbox`, `listSandboxes`, `remove`, `runCode`, shared defaults).
+
 [![npm version](https://img.shields.io/npm/v/@voidrun/sdk)](https://www.npmjs.com/package/@voidrun/sdk)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+
+## Table of contents
+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Quick start](#quick-start)
+- [Core concepts](#core-concepts)
+- [Code execution](#code-execution)
+- [Code interpreter](#code-interpreter)
+- [Background commands](#background-commands)
+- [File operations](#file-operations)
+- [File watching](#file-watching)
+- [Pseudo-terminal (PTY)](#pseudo-terminal-pty)
+- [API reference](#api-reference)
+- [Examples](#examples)
+- [Error handling](#error-handling)
+- [Testing and examples runner](#testing-and-examples-runner)
+- [Building from source](#building-from-source)
+- [Publishing](#publishing)
+- [Troubleshooting](#troubleshooting)
 
 ## Features
 
@@ -15,7 +39,12 @@ A powerful, type-safe SDK for interacting with VoidRun AI Sandboxes. Execute cod
 - 🧠 **Code Interpreter** - Easy multi-language code execution (Python, JavaScript, Bash)
 - ⚡ **Background Commands** - Run, list, kill, and attach to background processes
 - 🔐 **Type-Safe** - Full TypeScript support with generated types from OpenAPI
-- 🎯 **Promise-aokd** - Modern async/await API
+- 🎯 **Async/await** - Promise-based API throughout
+
+## Requirements
+
+- **Node.js** 18+ recommended (ESM package; Node 20+ for `tsx` examples)
+- TypeScript 5.x when compiling from source
 
 ## Installation
 
@@ -29,30 +58,48 @@ Or with yarn:
 yarn add @voidrun/sdk
 ```
 
-## Quick Start
+## Configuration
 
-### Basic Usage
+`VoidRun` requires an **API key**. **Base URL** is resolved from `process.env.VR_API_URL` or the built-in default `BASE_PATH` (see `src/api-client/runtime.ts` — typically `https://platform.void-run.com/api` without a trailing slash).
 
 ```typescript
 import { VoidRun } from "@voidrun/sdk";
 
-// Initialize the SDK with your credentials
+const vr = new VoidRun({
+  apiKey: process.env.VR_API_KEY!, // or pass a string literal
+});
+```
+
+| Environment variable | Purpose |
+|--------------------|---------|
+| `VR_API_KEY` | API key when not passed to the constructor. |
+| `VR_API_URL` | API base URL (overrides packaged default). |
+
+**`createSandbox` defaults** (when you omit fields) match the Python SDK: image `code`, **1** CPU, **1024** MB memory.
+
+For **self-hosted** VoidRun, set **`VR_API_URL`** to your instance’s API root (including `/api` if that is how your server is mounted).
+
+## Quick start
+
+### Basic usage
+
+```typescript
+import { VoidRun } from "@voidrun/sdk";
+
 const vr = new VoidRun({
   apiKey: "your-api-key-here",
 });
 
-// Create a sandbox
 const sandbox = await vr.createSandbox({});
 
-// Execute a command
+// Exec returns ExecResponse: stdout/stderr/exitCode live on .data (ExecResponseData)
 const result = await sandbox.exec({ command: 'echo "Hello from VoidRun"' });
 console.log(result.data?.stdout);
 
-// Clean up
 await sandbox.remove();
 ```
 
-## Core Concepts
+## Core concepts
 
 ### Sandboxes
 
@@ -88,11 +135,13 @@ await sandbox.resume();   // Resume a paused sandbox
 await sandbox.remove();
 ```
 
-### Code Execution
+### Code execution
 
 Execute commands and capture output, errors, and exit codes.
 
-#### Synchronous Execution
+Non-streaming **`exec`** resolves to an **`ExecResponse`** from the OpenAPI client: use **`result.data`** for **`ExecResponseData`** (`stdout`, `stderr`, `exitCode`).
+
+#### Synchronous execution
 
 ```typescript
 const result = await sandbox.exec({ command: "ls -la /home" });
@@ -102,7 +151,7 @@ console.log(result.data?.stderr);   // standard error
 console.log(result.data?.exitCode); // exit code
 ```
 
-#### Streaming Execution (SSE)
+#### Streaming execution (SSE)
 
 For real-time output, provide streaming handlers:
 
@@ -118,7 +167,7 @@ await sandbox.exec({
 });
 ```
 
-#### Execution with Options
+#### Execution with options
 
 ```typescript
 const result = await sandbox.exec({
@@ -129,7 +178,7 @@ const result = await sandbox.exec({
 });
 ```
 
-### Code Interpreter
+### Code interpreter
 
 Execute code in multiple programming languages with a simple, intuitive API.
 
@@ -160,7 +209,7 @@ console.log(streamResult.logs);      // { stdout: [...], stderr: [...] }
 
 **Supported Languages:** `python`, `javascript`, `typescript`, `node`, `bash`, `sh`
 
-### Background Commands
+### Background commands
 
 Run long-running processes in the background and manage them.
 
@@ -194,7 +243,7 @@ const killResult = await sandbox.commands.kill(runResult.pid);
 console.log(killResult.success);
 ```
 
-### File Operations
+### File operations
 
 Create, read, update, and manage files in the sandbox.
 
@@ -262,7 +311,7 @@ console.log(archive.archivePath || archive.data?.archivePath);
 await sandbox.fs.extractArchive("/tmp/archive.tar.gz", "/tmp/extracted");
 ```
 
-### File Watching
+### File watching
 
 Monitor file changes in real-time.
 
@@ -284,11 +333,11 @@ const watcher = await sandbox.fs.watch("/app", {
 watcher.close();
 ```
 
-### Pseudo-Terminal (PTY)
+### Pseudo-terminal (PTY)
 
 Interactive terminal sessions with two modes:
 
-#### Ephemeral Sessions (Temporary)
+#### Ephemeral sessions (temporary)
 
 ```typescript
 // No session management - temporary shell
@@ -309,10 +358,10 @@ pty.sendInput("pwd\n");
 pty.close();
 ```
 
-#### Persistent Sessions
+#### Persistent sessions
 
 ```typescript
-// Create a persistent session
+// Create a persistent session (CreatePTYSession200Response)
 const response = await sandbox.pty.createSession();
 const sessionId = response.data?.sessionId;
 
@@ -339,7 +388,7 @@ const reconnected = await sandbox.pty.connect({
 });
 ```
 
-#### Interactive Commands
+#### Interactive commands
 
 Run commands with automatic prompt detection:
 
@@ -354,13 +403,13 @@ const output = await pty.runCommand("ls -la", {
 console.log("Output:", output);
 ```
 
-#### Resize Terminal
+#### Resize terminal
 
 ```typescript
 pty.resize(80, 24); // columns, rows
 ```
 
-#### Session Management
+#### Session management
 
 ```typescript
 // List all sessions
@@ -370,9 +419,9 @@ const sessions = await sandbox.pty.list();
 await sandbox.pty.deleteSession(sessionId);
 ```
 
-## API Reference
+## API reference
 
-### VoidRun Class
+### VoidRun class
 
 Main client for interacting with the API.
 
@@ -382,26 +431,25 @@ new VoidRun(options?: VoidRunConfig)
 
 **Options:**
 
-- `apiKey?: string` - API key (defaults to `process.env.VR_API_KEY`)
-- `baseUrl?: string` - Base API URL (defaults to `process.env.VR_API_URL`)
-- `orgId?: string` - Organization ID (optional)
+- `apiKey?: string` - API key (defaults to `process.env.VR_API_KEY`; empty throws)
 
 **Methods:**
 
 - `createSandbox(options: SandboxOptions)` - Create a new sandbox
   - `name?: string` - Sandbox name
-  - `image?: string` - Image ID
-  - `cpu?: number` - CPU cores
-  - `mem?: number` - Memory in MB
+  - `image?: string` - Image id (defaults to `code` when omitted)
+  - `cpu?: number` - CPU cores (default `1`)
+  - `mem?: number` - Memory in MB (default `1024`)
   - `orgId?: string` - Organization ID
   - `userId?: string` - User ID
   - `sync?: boolean` - Sync mode (default: true)
   - `envVars?: Record<string, string>` - Environment variables
-- `listSandboxes()` - List all sandboxes (returns `{ sandboxes: Sandbox[], meta }`)
+  - `autoSleep?: boolean`, `region?: string`, `refId?: string` - optional passthrough fields
+- `listSandboxes(options?: { page?: number; limit?: number })` - Returns `{ sandboxes, meta }` where `meta` has `total`, `page`, `limit`, `totalPages`
 - `getSandbox(id: string)` - Get a specific sandbox
-- `removeSandbox(id: string)` - Delete a sandbox
+- `removeSandbox(id: string)` - Delete a sandbox by id
 
-### Sandbox Class
+### Sandbox class
 
 Represents an isolated sandbox environment.
 
@@ -416,6 +464,7 @@ Represents an isolated sandbox environment.
 - `createdBy: string` - Creator ID
 - `status: string` - Sandbox status
 - `envVars?: { [key: string]: string }` - Environment variables
+- `region?: string`, `refId?: string`, `autoSleep?: boolean` - Optional metadata
 - `fs: FS` - File system interface
 - `pty: PTY` - PTY interface
 - `interpreter: CodeInterpreter` - Code interpreter
@@ -440,17 +489,20 @@ Represents an isolated sandbox environment.
 - `pause()` - Pause the sandbox
 - `resume()` - Resume the sandbox
 - `remove()` - Delete the sandbox
-- `info()` - Get sandbox information
+- `info()` - Returns the same sandbox instance (`Promise<this>`)
 
-**Exec Response:**
+**Exec response (`ExecResponse`):**
 
 ```typescript
+// Returned from non-streaming exec()
 {
+  status?: string;
+  message?: string;
   data?: {
-    stdout: string;   // standard output
-    stderr: string;   // standard error
-    exitCode: number; // exit code
-  }
+    stdout?: string;
+    stderr?: string;
+    exitCode?: number;
+  };
 }
 ```
 
@@ -471,7 +523,7 @@ Represents an isolated sandbox environment.
 }
 ```
 
-### Commands Class
+### Commands class
 
 Background process management.
 
@@ -483,7 +535,7 @@ Background process management.
 - `connect(pid: number, handlers: ProcessAttachHandlers)` - Attach to process output stream
 - `wait(pid: number)` - Wait for process to complete
 
-### FileSystem Interface
+### FS (file system) class
 
 Manage files and directories.
 
@@ -508,7 +560,7 @@ Manage files and directories.
 - `folderSize(path: string)` - Get folder size
 - `watch(path: string, options: FileWatchOptions)` - Watch for file changes
 
-### FileWatcher Interface
+### FileWatcher
 
 Monitor file changes in real-time.
 
@@ -524,7 +576,7 @@ Monitor file changes in real-time.
 
 - `close()` - Stop watching
 
-### PTY Interface
+### PTY class
 
 Pseudo-terminal operations.
 
@@ -695,22 +747,13 @@ pty.close();
 await sandbox.remove();
 ```
 
-## Configuration
+## Error handling
 
-The SDK can be configured by passing options to the `VoidRun` constructor:
-
-```typescript
-const vr = new VoidRun({
-  apiKey: "your-api-key",              // Required: Your API key
-  orgId: "your-org-id"                 // Optional: Organization ID
-});
-```
-
-## Error Handling
+Failed HTTP calls from the generated client are thrown as an **`Error`** whose message combines status text with the API body when JSON parsing succeeds: fields **`error`**, **`details`**, and **`message`** are concatenated so you see the same hints as in the Python SDK.
 
 ```typescript
 try {
-  const sandbox = await vr.createSandbox({ mem: 256, cpu: 0.5 });
+  const sandbox = await vr.createSandbox({ mem: 1024, cpu: 1 });
   // ...
 } catch (error) {
   if (error instanceof Error) {
@@ -719,36 +762,44 @@ try {
 }
 ```
 
-Common errors:
+Common cases:
 
-- **Validation Error** - Invalid sandbox parameters
-- **Authentication Error** - Invalid or missing API key
-- **Not Found** - Sandbox or session doesn't exist
-- **Timeout** - Operation took too long
+- **Validation** — Invalid sandbox parameters for your org/plan
+- **Authentication** — Missing/invalid API key
+- **Not found** — Wrong sandbox or session id
+- **Timeout** — Network or long-running command limits
 
-## Testing
+## Testing and examples runner
 
-Run the comprehensive test suite:
+From the `ts-sdk` directory:
 
 ```bash
 npm install
-npx tsx example/test-sandbox-exec.ts
+chmod +x scripts/run_all_examples.sh   # once
+./scripts/run_all_examples.sh
 ```
 
-Available examples:
+Each example is run with `npx tsx --env-file=.env <file>`. Create a **`.env`** with at least `VR_API_KEY=` (and `VR_API_URL=` if not using the default host). The script exits with status **1** if any example fails (suitable for CI).
 
-- `test-sandbox-exec.ts` - Command execution with streaming
-- `test-sandbox-fs.ts` - File system operations
-- `test-sandbox-lifecycle.ts` - Sandbox lifecycle management
-- `test-pty.ts` - PTY session management
-- `test-pty-comprehensive.ts` - Full PTY testing (9 scenarios)
-- `test-watch.ts` - File watching
-- `test-background-exec.ts` - Background process management
-- `code-interpreter-example.ts` - Code interpreter usage
-- `test-commonjs-import.cjs` - CommonJS import test
-- `test-esm-import.mjs` - ESM import test
+Run a single script:
 
-## Building from Source
+```bash
+npx tsx --env-file=.env example/test-sandbox-exec.ts
+```
+
+Notable scripts under `example/`:
+
+- `test-sandbox-exec.ts` — Command execution (incl. streaming)
+- `test-sandbox-fs.ts` — File system operations
+- `test-sandbox-lifecycle.ts` — Sandbox lifecycle
+- `test-pty.ts` / `test-pty-comprehensive.ts` — PTY
+- `test-watch.ts` — File watching
+- `test-background-exec.ts` — Background commands
+- `test-ts-exec.ts` — TypeScript via `runCode`
+- `code-interpreter-example.ts` — Interpreter workflow
+- `test-commonjs-import.cjs` / `test-esm-import.mjs` — Package exports
+
+## Building from source
 
 ```bash
 # Install dependencies
@@ -764,26 +815,29 @@ npm run clean
 ## Publishing
 
 ```bash
-# Build and publish to npm
-npm run publish
+npm run build
+npm publish --access public
 ```
+
+(`prepublishOnly` in `package.json` runs a clean build and bumps the patch version — adjust your release workflow if you do not want an automatic version bump.)
 
 ## Troubleshooting
 
-### "API key is required, either pass in constructor or in env vars"
+### "API key is required"
 
-Pass your API key in the constructor:
+Pass the key in the constructor or set `VR_API_KEY`:
 
 ```typescript
-const vr = new VoidRun({
-  apiKey: "your-api-key"
-});
+const vr = new VoidRun({ apiKey: "your-api-key" });
 ```
 
-Pass in env vars(.env)
 ```bash
-VR_API_KEY=vr_sddfgd2353erggdfgfdgdgdfg
+export VR_API_KEY="your-api-key"
 ```
+
+### "Base URL is required"
+
+Set **`VR_API_URL`** to your API root. The constructor rejects an empty resolved base URL.
 
 ### "Sandbox creation failed"
 
