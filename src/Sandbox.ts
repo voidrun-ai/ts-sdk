@@ -135,6 +135,10 @@ export default class VRSandbox {
     return this;
   }
 
+  /**
+   * Run a shell command and wait for it to finish (sync `POST .../exec`), or stream via handlers (`exec-stream`).
+   * There is no `background` option on exec — use `sandbox.commands.run` for detached processes and PIDs.
+   */
   async exec(execRequest: ExecRequest, handlers?: ExecStreamHandlers) {
     // If streaming handlers are provided, use streaming mode
     if (handlers?.onStdout || handlers?.onStderr || handlers?.onExit) {

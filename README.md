@@ -32,7 +32,7 @@ The public surface is aligned with the **[VoidRun Python SDK](https://pypi.org/p
 ## Features
 
 - 🏗️ **Sandbox Management** - Create, list, start, stop, pause, resume, and remove sandboxes
-- 🚀 **Code Execution** - Execute commands with real-time streaming output capture
+- 🚀 **Code Execution** - Synchronous `exec` (no `background` flag) and optional SSE streaming; use **Background Commands** for PIDs
 - 📁 **File Operations** - Create, read, delete, compress, and extract files
 - 👀 **File Watching** - Monitor file changes in real-time via WebSocket
 - 💻 **Pseudo-Terminal (PTY)** - Interactive terminal sessions (ephemeral & persistent)
@@ -140,6 +140,8 @@ await sandbox.remove();
 Execute commands and capture output, errors, and exit codes.
 
 Non-streaming **`exec`** resolves to an **`ExecResponse`** from the OpenAPI client: use **`result.data`** for **`ExecResponseData`** (`stdout`, `stderr`, `exitCode`).
+
+**`sandbox.exec` is synchronous only** — it waits for the command to finish. **`exec` has no `background` option.** To start a long-running process and get a **PID**, use **`sandbox.commands.run`** (see [Background commands](#background-commands)).
 
 #### Synchronous execution
 
@@ -472,7 +474,7 @@ Represents an isolated sandbox environment.
 
 **Methods:**
 
-- `exec(request: ExecRequest, handlers?: ExecStreamHandlers)` - Execute a command
+- `exec(request: ExecRequest, handlers?: ExecStreamHandlers)` - Execute a command (synchronous `.../exec`, or SSE when handlers are set). No `background` option — use `commands.run` for PIDs.
   - `request.command: string` - Command to execute
   - `request.cwd?: string` - Working directory
   - `request.env?: Record<string, string>` - Environment variables
@@ -794,9 +796,10 @@ Notable scripts under `example/`:
 - `test-sandbox-lifecycle.ts`: Sandbox lifecycle
 - `test-pty.ts` / `test-pty-comprehensive.ts`: PTY
 - `test-watch.ts`: File watching
-- `test-background-exec.ts`: Background commands
+- `test-background-exec.ts`: Commands API (`run`, `list`, `kill`, `connect`, `wait`)
 - `test-ts-exec.ts`: TypeScript via `runCode`
 - `code-interpreter-example.ts`: Interpreter workflow
+- `coding-agent-sandbox.ts`: Install Copilot / Claude Code / OpenCode / Kilo CLI in a sandbox (`claude` \| `opencode` \| `kilo` \| `copilot` arg); workspace **`/work/agent-project`**, **`sudo`** for **`mkdir`** / **`npm install -g`**
 - `test-commonjs-import.cjs` / `test-esm-import.mjs`: Package exports
 
 ## Building from source
