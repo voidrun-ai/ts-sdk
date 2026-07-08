@@ -29,6 +29,7 @@
     "lint": "biome lint .",
     "format": "biome format --write .",
     "check": "biome check --write .",
+    "examples:all": "bash scripts/run_all_examples.sh",
     "prepublishOnly": "npm run clean && npm run build && npm version patch",
     "prepare": "husky"
   },
@@ -44,6 +45,8 @@
     "@types/ws": "^8.18.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
+    "mongodb": "^7.2.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "lint-staged": {

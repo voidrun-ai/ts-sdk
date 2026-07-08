@@ -12,7 +12,6 @@ export type SandboxOptions = {
   autoDeleteAfterMinutes?: number;
   autoSleep?: boolean;
   region?: string;
-  refId?: string;
 };
 
 export type VoidRunConfig = {

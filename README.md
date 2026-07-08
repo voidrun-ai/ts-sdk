@@ -111,7 +111,7 @@ const sandbox = await vr.createSandbox({
   name: "my-sandbox",       // Optional: Sandbox name
   mem: 1024,                // Memory in MB (optional, has defaults)
   cpu: 1,                   // CPU cores (optional, has defaults)
-  image: "code",            // Optional: Image name. Valid values are code, code:1.42.4. Check dashboard for more system images
+  image: "code",            // Optional: Image name. Common hosted values include code, docker-lite, max, and docker
   envVars: {                // Optional: Environment variables
     DEBUG: 'true',
     LOG_LEVEL: 'info'
@@ -779,6 +779,14 @@ From the `ts-sdk` directory:
 npm install
 chmod +x scripts/run_all_examples.sh   # once
 ./scripts/run_all_examples.sh
+
+Or from npm (same script):
+
+```bash
+npm run examples:all
+```
+
+Optional: `VOIDRUN_TS_SDK_ENV_FILE=/path/to/.env npm run examples:all`
 ```
 
 Each example is run with `npx tsx --env-file=.env <file>`. Create a **`.env`** with at least `VR_API_KEY=` (add **`VR_API_URL=`** only for self-hosted). The script exits with status **1** if any example fails (suitable for CI).

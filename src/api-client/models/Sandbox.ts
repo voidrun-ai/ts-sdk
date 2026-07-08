@@ -98,11 +98,11 @@ export interface Sandbox {
      */
     region?: string;
     /**
-     * External reference ID
+     * Voidrun host that created this sandbox
      * @type {string}
      * @memberof Sandbox
      */
-    refId?: string;
+    nodeId?: string;
 }
 
 
@@ -148,7 +148,7 @@ export function SandboxFromJSONTyped(json: any, ignoreDiscriminator: boolean): S
         'envVars': json['envVars'] == null ? undefined : json['envVars'],
         'autoSleep': json['autoSleep'] == null ? undefined : json['autoSleep'],
         'region': json['region'] == null ? undefined : json['region'],
-        'refId': json['refId'] == null ? undefined : json['refId'],
+        'nodeId': json['nodeId'] == null ? undefined : json['nodeId'],
     };
 }
 
@@ -176,7 +176,7 @@ export function SandboxToJSONTyped(value?: Sandbox | null, ignoreDiscriminator: 
         'envVars': value['envVars'],
         'autoSleep': value['autoSleep'],
         'region': value['region'],
-        'refId': value['refId'],
+        'nodeId': value['nodeId'],
     };
 }
 
