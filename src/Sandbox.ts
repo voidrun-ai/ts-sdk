@@ -18,6 +18,7 @@ import {
   type ExecStreamHandlers,
   PtySessionInfo,
   type SandboxOptions,
+  type SandboxPublicURL,
 } from './types.js';
 import { wrapRequest } from './utils/runtime.js';
 
@@ -259,4 +260,50 @@ export default class VRSandbox {
   ): Promise<CodeExecutionResult> {
     return this.interpreter.runCode(code, options);
   }
+
+  /** Public URLs for every port this sandbox publishes. */
+  async getPublicUrls(): Promise<SandboxPublicURL[]> {
+    const fetchApi = this.config.fetchApi ?? fetch;
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    if (this.config.apiKey) {
+      headers['X-API-Key'] = await this.config.apiKey('X-API-Key');
+    }
+
+    const url = `${this.config.basePath}/sandboxes/${this.id}/public-urls`;
+    const response = await fetchApi(url, { method: 'GET', headers });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(
+        text || `Failed to fetch public URLs (status ${response.status})`,
+      );
+    }
+
+    const body = (await response.json()) as { data?: unknown };
+    return normalizePublicUrls(body?.data);
+  }
+
+  /** Public URL for one published port, or `undefined` if not published. */
+  async getPublicUrl(port: number): Promise<SandboxPublicURL | undefined> {
+    const urls = await this.getPublicUrls();
+    return urls.find((u) => u.port === port);
+  }
+}
+
+function normalizePublicUrls(raw: unknown): SandboxPublicURL[] {
+  if (!Array.isArray(raw)) return [];
+  const out: SandboxPublicURL[] = [];
+  for (const entry of raw) {
+    if (!entry || typeof entry !== 'object') continue;
+    const rawPort = (entry as { port?: unknown }).port;
+    const port =
+      typeof rawPort === 'number'
+        ? rawPort
+        : Number.parseInt(String(rawPort), 10);
+    if (!Number.isInteger(port) || port < 1 || port > 65535) continue;
+    const url = (entry as { url?: unknown }).url;
+    if (typeof url !== 'string' || url.length === 0) continue;
+    out.push({ port, url });
+  }
+  return out;
 }

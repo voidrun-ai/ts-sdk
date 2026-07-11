@@ -110,3 +110,9 @@ export interface FileChangeEvent {
   type: 'create' | 'write' | 'remove' | 'rename' | 'chmod' | string;
   path: string;
 }
+
+/** A published sandbox port and its public URL. */
+export type SandboxPublicURL = {
+  port: number;
+  url: string;
+};

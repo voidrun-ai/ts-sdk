@@ -30,7 +30,8 @@
     "format": "biome format --write .",
     "check": "biome check --write .",
     "examples:all": "bash scripts/run_all_examples.sh",
-    "prepublishOnly": "npm run clean && npm run build && npm version patch",
+    "test:unit": "tsx --test test/*.test.ts",
+    "prepublishOnly": "npm run clean && npm run build && npm run test:unit && npm version patch",
     "prepare": "husky"
   },
   "keywords": [],

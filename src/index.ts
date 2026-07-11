@@ -42,6 +42,7 @@ export type {
   PtyOptions,
   PtyResize,
   PtySessionInfo,
+  SandboxPublicURL,
 } from './types.js';
 
 export class VoidRun {
