@@ -79,12 +79,6 @@ export interface CreateSandboxRequest {
      * @memberof CreateSandboxRequest
      */
     region?: string;
-    /**
-     * External reference ID for tracking
-     * @type {string}
-     * @memberof CreateSandboxRequest
-     */
-    refId?: string;
 }
 
 /**
@@ -115,7 +109,6 @@ export function CreateSandboxRequestFromJSONTyped(json: any, ignoreDiscriminator
         'envVars': json['envVars'] == null ? undefined : json['envVars'],
         'autoSleep': json['autoSleep'] == null ? undefined : json['autoSleep'],
         'region': json['region'] == null ? undefined : json['region'],
-        'refId': json['refId'] == null ? undefined : json['refId'],
     };
 }
 
@@ -140,7 +133,6 @@ export function CreateSandboxRequestToJSONTyped(value?: CreateSandboxRequest | n
         'envVars': value['envVars'],
         'autoSleep': value['autoSleep'],
         'region': value['region'],
-        'refId': value['refId'],
     };
 }
 

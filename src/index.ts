@@ -84,7 +84,6 @@ export class VoidRun {
       envVars,
       autoSleep,
       region,
-      refId,
     } = options;
 
     const response = await wrapRequest<CreateSandbox201Response>(
@@ -100,7 +99,6 @@ export class VoidRun {
           envVars: envVars,
           autoSleep: autoSleep,
           region: region,
-          refId: refId,
         },
       }),
     );

@@ -19,7 +19,6 @@ Name | Type
 `envVars` | { [key: string]: string; }
 `autoSleep` | boolean
 `region` | string
-`refId` | string
 
 ## Example
 
@@ -41,7 +40,6 @@ const example = {
   "envVars": {"DEBUG":"true","LOG_LEVEL":"info"},
   "autoSleep": true,
   "region": us-east-1,
-  "refId": ref-123456,
 } satisfies Sandbox
 
 console.log(example)

@@ -16,7 +16,6 @@ Name | Type
 `envVars` | { [key: string]: string; }
 `autoSleep` | boolean
 `region` | string
-`refId` | string
 
 ## Example
 
@@ -35,7 +34,6 @@ const example = {
   "envVars": {"DEBUG":"true","LOG_LEVEL":"info"},
   "autoSleep": true,
   "region": eu,
-  "refId": ftr4dr,
 } satisfies CreateSandboxRequest
 
 console.log(example)

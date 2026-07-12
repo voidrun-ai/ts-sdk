@@ -446,7 +446,7 @@ new VoidRun(options?: VoidRunConfig)
   - `userId?: string` - User ID
   - `sync?: boolean` - Sync mode (default: true)
   - `envVars?: Record<string, string>` - Environment variables
-  - `autoSleep?: boolean`, `region?: string`, `refId?: string` - optional passthrough fields
+  - `autoSleep?: boolean`, `region?: string` - optional passthrough fields
 - `listSandboxes(options?: { page?: number; limit?: number })` - Returns `{ sandboxes, meta }` where `meta` has `total`, `page`, `limit`, `totalPages`
 - `getSandbox(id: string)` - Get a specific sandbox
 - `removeSandbox(id: string)` - Delete a sandbox by id
@@ -466,7 +466,7 @@ Represents an isolated sandbox environment.
 - `createdBy: string` - Creator ID
 - `status: string` - Sandbox status
 - `envVars?: { [key: string]: string }` - Environment variables
-- `region?: string`, `refId?: string`, `autoSleep?: boolean` - Optional metadata
+- `region?: string`, `autoSleep?: boolean` - Optional metadata
 - `fs: FS` - File system interface
 - `pty: PTY` - PTY interface
 - `interpreter: CodeInterpreter` - Code interpreter

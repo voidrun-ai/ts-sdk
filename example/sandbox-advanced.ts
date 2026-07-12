@@ -6,11 +6,8 @@ async function main() {
   console.log('--- Advanced Sandbox Construction ---');
 
   const sandboxName = 'advanced-sdbx-' + Math.floor(Math.random() * 1000);
-  const refId = 'ref-' + Date.now();
 
-  console.log(
-    `Creating sandbox ${sandboxName} in region 'us' with refId ${refId}...`,
-  );
+  console.log(`Creating sandbox ${sandboxName} in region 'us'...`);
 
   const sandbox = await vr.createSandbox({
     name: sandboxName,
@@ -25,12 +22,8 @@ async function main() {
     console.log('\nSandbox Metadata:');
     console.log(`- ID: ${sandbox.id}`);
     console.log(`- Name: ${sandbox.name}`);
-    // @ts-expect-error - internal fields might not be in the public VRSandbox type yet if we strictly typed it
-    console.log(`- Region: ${(sandbox as any).region}`);
-    // @ts-expect-error
-    console.log(`- RefID: ${(sandbox as any).refId}`);
-    // @ts-expect-error
-    console.log(`- AutoSleep: ${(sandbox as any).autoSleep}`);
+    console.log(`- Region: ${sandbox.region}`);
+    console.log(`- AutoSleep: ${sandbox.autoSleep}`);
 
     console.log('\n--- Pagination Test ---');
     console.log('Listing sandboxes (page 1, limit 2)...');
