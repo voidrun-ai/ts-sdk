@@ -12,33 +12,42 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  CreateFileRequest,
-  ErrorResponse,
-  ExecResponse,
-  ListFiles200Response,
-  StartWatch200Response,
-  StartWatchRequest,
-  SuccessResponse,
-} from '../models/index';
 import {
+    type CreateFileRequest,
     CreateFileRequestFromJSON,
     CreateFileRequestToJSON,
+} from '../models/CreateFileRequest';
+import {
+    type ErrorResponse,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+} from '../models/ErrorResponse';
+import {
+    type ExecResponse,
     ExecResponseFromJSON,
     ExecResponseToJSON,
+} from '../models/ExecResponse';
+import {
+    type ListFiles200Response,
     ListFiles200ResponseFromJSON,
     ListFiles200ResponseToJSON,
+} from '../models/ListFiles200Response';
+import {
+    type StartWatch200Response,
     StartWatch200ResponseFromJSON,
     StartWatch200ResponseToJSON,
+} from '../models/StartWatch200Response';
+import {
+    type StartWatchRequest,
     StartWatchRequestFromJSON,
     StartWatchRequestToJSON,
+} from '../models/StartWatchRequest';
+import {
+    type SuccessResponse,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-} from '../models/index';
+} from '../models/SuccessResponse';
 
 export interface ChangePermissionsRequest {
     id: string;
@@ -142,10 +151,9 @@ export interface UploadFileRequest {
 export class FileSystemApi extends runtime.BaseAPI {
 
     /**
-     * Change the permissions (mode) of a file or directory
-     * Change file permissions
+     * Creates request options for changePermissions without sending the request
      */
-    async changePermissionsRaw(requestParameters: ChangePermissionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async changePermissionsRequestOpts(requestParameters: ChangePermissionsRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -185,14 +193,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/chmod`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Change the permissions (mode) of a file or directory
+     * Change file permissions
+     */
+    async changePermissionsRaw(requestParameters: ChangePermissionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.changePermissionsRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
@@ -207,10 +224,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create an archive from a file or directory
-     * Compress file or directory
+     * Creates request options for compressFile without sending the request
      */
-    async compressFileRaw(requestParameters: CompressFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async compressFileRequestOpts(requestParameters: CompressFileRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -243,14 +259,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/compress`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create an archive from a file or directory
+     * Compress file or directory
+     */
+    async compressFileRaw(requestParameters: CompressFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.compressFileRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
@@ -265,10 +290,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Copy a file or directory to a new location
-     * Copy file or directory
+     * Creates request options for copyFile without sending the request
      */
-    async copyFileRaw(requestParameters: CopyFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async copyFileRequestOpts(requestParameters: CopyFileRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -308,14 +332,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/copy`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Copy a file or directory to a new location
+     * Copy file or directory
+     */
+    async copyFileRaw(requestParameters: CopyFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.copyFileRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
@@ -330,10 +363,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a new directory
-     * Create directory
+     * Creates request options for createDirectory without sending the request
      */
-    async createDirectoryRaw(requestParameters: CreateDirectoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async createDirectoryRequestOpts(requestParameters: CreateDirectoryRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -362,14 +394,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/mkdir`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create a new directory
+     * Create directory
+     */
+    async createDirectoryRaw(requestParameters: CreateDirectoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.createDirectoryRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
@@ -384,10 +425,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a new file with optional content
-     * Create file
+     * Creates request options for createFile without sending the request
      */
-    async createFileRaw(requestParameters: CreateFileOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async createFileRequestOpts(requestParameters: CreateFileOperationRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -422,15 +462,24 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/create`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: CreateFileRequestToJSON(requestParameters['createFileRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create a new file with optional content
+     * Create file
+     */
+    async createFileRaw(requestParameters: CreateFileOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.createFileRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
@@ -445,10 +494,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete a file or directory
-     * Delete file or directory
+     * Creates request options for deleteFile without sending the request
      */
-    async deleteFileRaw(requestParameters: DeleteFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async deleteFileRequestOpts(requestParameters: DeleteFileRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -477,14 +525,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Delete a file or directory
+     * Delete file or directory
+     */
+    async deleteFileRaw(requestParameters: DeleteFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.deleteFileRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
@@ -499,10 +556,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get disk usage for a path
-     * Disk usage
+     * Creates request options for diskUsage without sending the request
      */
-    async diskUsageRaw(requestParameters: DiskUsageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async diskUsageRequestOpts(requestParameters: DiskUsageRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -531,14 +587,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/du`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get disk usage for a path
+     * Disk usage
+     */
+    async diskUsageRaw(requestParameters: DiskUsageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.diskUsageRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
@@ -553,10 +618,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Download a file from the sandbox
-     * Download file
+     * Creates request options for downloadFile without sending the request
      */
-    async downloadFileRaw(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Blob>> {
+    async downloadFileRequestOpts(requestParameters: DownloadFileRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -585,14 +649,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/download`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Download a file from the sandbox
+     * Download file
+     */
+    async downloadFileRaw(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Blob>> {
+        const requestOptions = await this.downloadFileRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.BlobApiResponse(response);
     }
@@ -607,10 +680,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Extract an archive to a destination directory
-     * Extract archive
+     * Creates request options for extractArchive without sending the request
      */
-    async extractArchiveRaw(requestParameters: ExtractArchiveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async extractArchiveRequestOpts(requestParameters: ExtractArchiveRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -650,14 +722,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/extract`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Extract an archive to a destination directory
+     * Extract archive
+     */
+    async extractArchiveRaw(requestParameters: ExtractArchiveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.extractArchiveRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
@@ -672,10 +753,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get the first or last N lines of a file
-     * Read file head or tail
+     * Creates request options for headTail without sending the request
      */
-    async headTailRaw(requestParameters: HeadTailRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async headTailRequestOpts(requestParameters: HeadTailRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -712,14 +792,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/head-tail`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get the first or last N lines of a file
+     * Read file head or tail
+     */
+    async headTailRaw(requestParameters: HeadTailRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.headTailRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
@@ -734,10 +823,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * List files and directories in a path
-     * List files
+     * Creates request options for listFiles without sending the request
      */
-    async listFilesRaw(requestParameters: ListFilesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListFiles200Response>> {
+    async listFilesRequestOpts(requestParameters: ListFilesRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -766,14 +854,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * List files and directories in a path
+     * List files
+     */
+    async listFilesRaw(requestParameters: ListFilesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListFiles200Response>> {
+        const requestOptions = await this.listFilesRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ListFiles200ResponseFromJSON(jsonValue));
     }
@@ -788,10 +885,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Move or rename a file or directory
-     * Move file or directory
+     * Creates request options for moveFile without sending the request
      */
-    async moveFileRaw(requestParameters: MoveFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async moveFileRequestOpts(requestParameters: MoveFileRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -831,14 +927,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/move`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Move or rename a file or directory
+     * Move file or directory
+     */
+    async moveFileRaw(requestParameters: MoveFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.moveFileRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
@@ -853,10 +958,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Search for files matching a pattern
-     * Search files
+     * Creates request options for searchFiles without sending the request
      */
-    async searchFilesRaw(requestParameters: SearchFilesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async searchFilesRequestOpts(requestParameters: SearchFilesRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -896,14 +1000,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/search`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Search for files matching a pattern
+     * Search files
+     */
+    async searchFilesRaw(requestParameters: SearchFilesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.searchFilesRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
@@ -918,10 +1031,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Start monitoring a directory for file system events (create, modify, delete, rename) with optional recursion and hidden-dir filtering.
-     * Start watching a directory
+     * Creates request options for startWatch without sending the request
      */
-    async startWatchRaw(requestParameters: StartWatchOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StartWatch200Response>> {
+    async startWatchRequestOpts(requestParameters: StartWatchOperationRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -948,15 +1060,24 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/watch`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: StartWatchRequestToJSON(requestParameters['startWatchRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Start monitoring a directory for file system events (create, modify, delete, rename) with optional recursion and hidden-dir filtering.
+     * Start watching a directory
+     */
+    async startWatchRaw(requestParameters: StartWatchOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StartWatch200Response>> {
+        const requestOptions = await this.startWatchRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => StartWatch200ResponseFromJSON(jsonValue));
     }
@@ -971,10 +1092,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get detailed information about a file or directory
-     * Get file stats
+     * Creates request options for statFile without sending the request
      */
-    async statFileRaw(requestParameters: StatFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async statFileRequestOpts(requestParameters: StatFileRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -1003,14 +1123,23 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/stat`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get detailed information about a file or directory
+     * Get file stats
+     */
+    async statFileRaw(requestParameters: StatFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.statFileRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
@@ -1025,10 +1154,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * **RECOMMENDED:** Real-time WebSocket streaming of file system events.  Connect via WebSocket to receive events as they occur. This is more efficient than polling the `/events` endpoint and provides immediate notification of file system changes.  **WebSocket Protocol:** - Client connects to this endpoint - Server upgrades connection to WebSocket - Events are pushed to client as JSON objects - Connection stays open until client disconnects or session is stopped  **Event Format:** Each message is a FileEvent object (same as polling endpoint) 
-     * Stream file watch events (WebSocket)
+     * Creates request options for streamWatchEvents without sending the request
      */
-    async streamWatchEventsRaw(requestParameters: StreamWatchEventsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async streamWatchEventsRequestOpts(requestParameters: StreamWatchEventsRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -1053,15 +1181,24 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/watch/{sessionId}/stream`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-        urlPath = urlPath.replace(`{${"sessionId"}}`, encodeURIComponent(String(requestParameters['sessionId'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{sessionId}', encodeURIComponent(String(requestParameters['sessionId'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * **RECOMMENDED:** Real-time WebSocket streaming of file system events.  Connect via WebSocket to receive events as they occur. This is more efficient than polling the `/events` endpoint and provides immediate notification of file system changes.  **WebSocket Protocol:** - Client connects to this endpoint - Server upgrades connection to WebSocket - Events are pushed to client as JSON objects - Connection stays open until client disconnects or session is stopped  **Event Format:** Each message is a FileEvent object (same as polling endpoint) 
+     * Stream file watch events (WebSocket)
+     */
+    async streamWatchEventsRaw(requestParameters: StreamWatchEventsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const requestOptions = await this.streamWatchEventsRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.VoidApiResponse(response);
     }
@@ -1075,10 +1212,9 @@ export class FileSystemApi extends runtime.BaseAPI {
     }
 
     /**
-     * Upload a file to the sandbox
-     * Upload file
+     * Creates request options for uploadFile without sending the request
      */
-    async uploadFileRaw(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async uploadFileRequestOpts(requestParameters: UploadFileRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -1116,15 +1252,24 @@ export class FileSystemApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/files/upload`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: requestParameters['body'] as any,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Upload a file to the sandbox
+     * Upload file
+     */
+    async uploadFileRaw(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        const requestOptions = await this.uploadFileRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }

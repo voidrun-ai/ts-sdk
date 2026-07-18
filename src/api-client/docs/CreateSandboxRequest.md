@@ -16,6 +16,8 @@ Name | Type
 `envVars` | { [key: string]: string; }
 `autoSleep` | boolean
 `region` | string
+`publishPorts` | Array&lt;number&gt;
+`labels` | { [key: string]: string; }
 
 ## Example
 
@@ -34,6 +36,8 @@ const example = {
   "envVars": {"DEBUG":"true","LOG_LEVEL":"info"},
   "autoSleep": true,
   "region": eu,
+  "publishPorts": [8080,3000],
+  "labels": {"env":"prod","team":"backend"},
 } satisfies CreateSandboxRequest
 
 console.log(example)

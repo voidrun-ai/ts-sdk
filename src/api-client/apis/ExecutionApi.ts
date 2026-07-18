@@ -12,69 +12,102 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  CommandKillResponse,
-  CommandListResponse,
-  CommandRunResponse,
-  CommandWaitResponse,
-  CreatePTYSession200Response,
-  CreatePTYSessionRequest,
-  ErrorResponse,
-  ExecRequest,
-  ExecResponse,
-  ExecuteInSessionRequest,
-  GetPTYBuffer200Response,
-  KillBackgroundProcessRequest,
-  ListPTYSessions200Response,
-  ResizeTerminalRequest,
-  RunBackgroundCommandRequest,
-  SessionExecRequest,
-  SessionExecResponse,
-  SessionExecStreamRequest,
-  SuccessResponse,
-} from '../models/index';
 import {
+    type CommandKillResponse,
     CommandKillResponseFromJSON,
     CommandKillResponseToJSON,
+} from '../models/CommandKillResponse';
+import {
+    type CommandListResponse,
     CommandListResponseFromJSON,
     CommandListResponseToJSON,
+} from '../models/CommandListResponse';
+import {
+    type CommandRunResponse,
     CommandRunResponseFromJSON,
     CommandRunResponseToJSON,
+} from '../models/CommandRunResponse';
+import {
+    type CommandWaitResponse,
     CommandWaitResponseFromJSON,
     CommandWaitResponseToJSON,
+} from '../models/CommandWaitResponse';
+import {
+    type CreatePTYSession200Response,
     CreatePTYSession200ResponseFromJSON,
     CreatePTYSession200ResponseToJSON,
+} from '../models/CreatePTYSession200Response';
+import {
+    type CreatePTYSessionRequest,
     CreatePTYSessionRequestFromJSON,
     CreatePTYSessionRequestToJSON,
+} from '../models/CreatePTYSessionRequest';
+import {
+    type ErrorResponse,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+} from '../models/ErrorResponse';
+import {
+    type ExecRequest,
     ExecRequestFromJSON,
     ExecRequestToJSON,
+} from '../models/ExecRequest';
+import {
+    type ExecResponse,
     ExecResponseFromJSON,
     ExecResponseToJSON,
+} from '../models/ExecResponse';
+import {
+    type ExecuteInSessionRequest,
     ExecuteInSessionRequestFromJSON,
     ExecuteInSessionRequestToJSON,
+} from '../models/ExecuteInSessionRequest';
+import {
+    type GetPTYBuffer200Response,
     GetPTYBuffer200ResponseFromJSON,
     GetPTYBuffer200ResponseToJSON,
+} from '../models/GetPTYBuffer200Response';
+import {
+    type KillBackgroundProcessRequest,
     KillBackgroundProcessRequestFromJSON,
     KillBackgroundProcessRequestToJSON,
+} from '../models/KillBackgroundProcessRequest';
+import {
+    type ListPTYSessions200Response,
     ListPTYSessions200ResponseFromJSON,
     ListPTYSessions200ResponseToJSON,
+} from '../models/ListPTYSessions200Response';
+import {
+    type ResizeTerminalRequest,
     ResizeTerminalRequestFromJSON,
     ResizeTerminalRequestToJSON,
+} from '../models/ResizeTerminalRequest';
+import {
+    type RunBackgroundCommandRequest,
     RunBackgroundCommandRequestFromJSON,
     RunBackgroundCommandRequestToJSON,
+} from '../models/RunBackgroundCommandRequest';
+import {
+    type SessionExecRequest,
     SessionExecRequestFromJSON,
     SessionExecRequestToJSON,
+} from '../models/SessionExecRequest';
+import {
+    type SessionExecResponse,
     SessionExecResponseFromJSON,
     SessionExecResponseToJSON,
+} from '../models/SessionExecResponse';
+import {
+    type SessionExecStreamRequest,
     SessionExecStreamRequestFromJSON,
     SessionExecStreamRequestToJSON,
+} from '../models/SessionExecStreamRequest';
+import {
+    type SuccessResponse,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-} from '../models/index';
+} from '../models/SuccessResponse';
 
 export interface AttachToBackgroundProcessRequest {
     id: string;
@@ -166,10 +199,9 @@ export interface WaitForBackgroundProcessRequest {
 export class ExecutionApi extends runtime.BaseAPI {
 
     /**
-     * Connect to a background process and stream its output as Server-Sent Events. Events: `stdout`, `stderr`, `exit`, `error`. 
-     * Attach to process output (SSE stream)
+     * Creates request options for attachToBackgroundProcess without sending the request
      */
-    async attachToBackgroundProcessRaw(requestParameters: AttachToBackgroundProcessRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async attachToBackgroundProcessRequestOpts(requestParameters: AttachToBackgroundProcessRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -196,15 +228,24 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/commands/attach`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: KillBackgroundProcessRequestToJSON(requestParameters['killBackgroundProcessRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Connect to a background process and stream its output as Server-Sent Events. Events: `stdout`, `stderr`, `exit`, `error`. 
+     * Attach to process output (SSE stream)
+     */
+    async attachToBackgroundProcessRaw(requestParameters: AttachToBackgroundProcessRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+        const requestOptions = await this.attachToBackgroundProcessRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         if (this.isJsonMime(response.headers.get('content-type'))) {
             return new runtime.JSONApiResponse<string>(response);
@@ -223,10 +264,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Establish a WebSocket connection for temporary terminal access. The WebSocket URL format is: `ws://host/api/sandboxes/{id}/pty` 
-     * Connect to ephemeral PTY (WebSocket)
+     * Creates request options for connectPTY without sending the request
      */
-    async connectPTYRaw(requestParameters: ConnectPTYRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async connectPTYRequestOpts(requestParameters: ConnectPTYRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -244,14 +284,23 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/pty`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Establish a WebSocket connection for temporary terminal access. The WebSocket URL format is: `ws://host/api/sandboxes/{id}/pty` 
+     * Connect to ephemeral PTY (WebSocket)
+     */
+    async connectPTYRaw(requestParameters: ConnectPTYRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const requestOptions = await this.connectPTYRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.VoidApiResponse(response);
     }
@@ -265,10 +314,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Establish a WebSocket connection to a PTY session for interactive terminal access. The WebSocket URL format is: `ws://host/api/sandboxes/{id}/pty/sessions/{sessionId}` 
-     * Connect to PTY session (WebSocket)
+     * Creates request options for connectPTYSession without sending the request
      */
-    async connectPTYSessionRaw(requestParameters: ConnectPTYSessionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async connectPTYSessionRequestOpts(requestParameters: ConnectPTYSessionRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -293,15 +341,24 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/pty/sessions/{sessionId}`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-        urlPath = urlPath.replace(`{${"sessionId"}}`, encodeURIComponent(String(requestParameters['sessionId'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{sessionId}', encodeURIComponent(String(requestParameters['sessionId'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Establish a WebSocket connection to a PTY session for interactive terminal access. The WebSocket URL format is: `ws://host/api/sandboxes/{id}/pty/sessions/{sessionId}` 
+     * Connect to PTY session (WebSocket)
+     */
+    async connectPTYSessionRaw(requestParameters: ConnectPTYSessionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const requestOptions = await this.connectPTYSessionRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.VoidApiResponse(response);
     }
@@ -315,10 +372,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a new PTY (pseudo-terminal) session for interactive commands
-     * Create PTY session
+     * Creates request options for createPTYSession without sending the request
      */
-    async createPTYSessionRaw(requestParameters: CreatePTYSessionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreatePTYSession200Response>> {
+    async createPTYSessionRequestOpts(requestParameters: CreatePTYSessionOperationRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -338,15 +394,24 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/pty/sessions`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: CreatePTYSessionRequestToJSON(requestParameters['createPTYSessionRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create a new PTY (pseudo-terminal) session for interactive commands
+     * Create PTY session
+     */
+    async createPTYSessionRaw(requestParameters: CreatePTYSessionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreatePTYSession200Response>> {
+        const requestOptions = await this.createPTYSessionRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => CreatePTYSession200ResponseFromJSON(jsonValue));
     }
@@ -361,10 +426,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Close and delete a PTY session
-     * Delete PTY session
+     * Creates request options for deletePTYSession without sending the request
      */
-    async deletePTYSessionRaw(requestParameters: DeletePTYSessionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async deletePTYSessionRequestOpts(requestParameters: DeletePTYSessionRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -389,15 +453,24 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/pty/sessions/{sessionId}`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-        urlPath = urlPath.replace(`{${"sessionId"}}`, encodeURIComponent(String(requestParameters['sessionId'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{sessionId}', encodeURIComponent(String(requestParameters['sessionId'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Close and delete a PTY session
+     * Delete PTY session
+     */
+    async deletePTYSessionRaw(requestParameters: DeletePTYSessionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        const requestOptions = await this.deletePTYSessionRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
@@ -412,10 +485,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Execute a command in the sandbox and wait for the result
-     * Execute command (synchronous)
+     * Creates request options for execCommand without sending the request
      */
-    async execCommandRaw(requestParameters: ExecCommandRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+    async execCommandRequestOpts(requestParameters: ExecCommandRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -442,21 +514,30 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/exec`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: ExecRequestToJSON(requestParameters['execRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Execute a command in the sandbox and wait for the result. For a non-blocking start with a PID, use `POST /sandboxes/{id}/commands/run`.
+     * Execute command (synchronous)
+     */
+    async execCommandRaw(requestParameters: ExecCommandRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ExecResponse>> {
+        const requestOptions = await this.execCommandRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ExecResponseFromJSON(jsonValue));
     }
 
     /**
-     * Execute a command in the sandbox and wait for the result
+     * Execute a command in the sandbox and wait for the result. For a non-blocking start with a PID, use `POST /sandboxes/{id}/commands/run`.
      * Execute command (synchronous)
      */
     async execCommand(requestParameters: ExecCommandRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ExecResponse> {
@@ -465,10 +546,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Execute a command and stream output as Server-Sent Events. Events: `stdout`, `stderr`, and final `exit`. 
-     * Execute command (SSE stream)
+     * Creates request options for execCommandStream without sending the request
      */
-    async execCommandStreamRaw(requestParameters: ExecCommandStreamRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async execCommandStreamRequestOpts(requestParameters: ExecCommandStreamRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -495,15 +575,24 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/exec-stream`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: ExecRequestToJSON(requestParameters['execRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Execute a command and stream output as Server-Sent Events. Events: `stdout`, `stderr`, and final `exit`. 
+     * Execute command (SSE stream)
+     */
+    async execCommandStreamRaw(requestParameters: ExecCommandStreamRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+        const requestOptions = await this.execCommandStreamRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         if (this.isJsonMime(response.headers.get('content-type'))) {
             return new runtime.JSONApiResponse<string>(response);
@@ -522,10 +611,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Execute a command asynchronously in an existing PTY session
-     * Execute command in PTY session
+     * Creates request options for executeInPTYSession without sending the request
      */
-    async executeInPTYSessionRaw(requestParameters: ExecuteInPTYSessionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async executeInPTYSessionRequestOpts(requestParameters: ExecuteInPTYSessionRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -559,16 +647,25 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/pty/sessions/{sessionId}/execute`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-        urlPath = urlPath.replace(`{${"sessionId"}}`, encodeURIComponent(String(requestParameters['sessionId'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{sessionId}', encodeURIComponent(String(requestParameters['sessionId'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: ExecuteInSessionRequestToJSON(requestParameters['executeInSessionRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Execute a command asynchronously in an existing PTY session
+     * Execute command in PTY session
+     */
+    async executeInPTYSessionRaw(requestParameters: ExecuteInPTYSessionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        const requestOptions = await this.executeInPTYSessionRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
@@ -583,10 +680,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get the current output buffer from a PTY session
-     * Get output buffer
+     * Creates request options for getPTYBuffer without sending the request
      */
-    async getPTYBufferRaw(requestParameters: GetPTYBufferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetPTYBuffer200Response>> {
+    async getPTYBufferRequestOpts(requestParameters: GetPTYBufferRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -611,15 +707,24 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/pty/sessions/{sessionId}/buffer`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-        urlPath = urlPath.replace(`{${"sessionId"}}`, encodeURIComponent(String(requestParameters['sessionId'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{sessionId}', encodeURIComponent(String(requestParameters['sessionId'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get the current output buffer from a PTY session
+     * Get output buffer
+     */
+    async getPTYBufferRaw(requestParameters: GetPTYBufferRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetPTYBuffer200Response>> {
+        const requestOptions = await this.getPTYBufferRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GetPTYBuffer200ResponseFromJSON(jsonValue));
     }
@@ -634,10 +739,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Terminate a running background process by PID
-     * Kill background process
+     * Creates request options for killBackgroundProcess without sending the request
      */
-    async killBackgroundProcessRaw(requestParameters: KillBackgroundProcessOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CommandKillResponse>> {
+    async killBackgroundProcessRequestOpts(requestParameters: KillBackgroundProcessOperationRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -664,15 +768,24 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/commands/kill`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: KillBackgroundProcessRequestToJSON(requestParameters['killBackgroundProcessRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Terminate a running background process by PID
+     * Kill background process
+     */
+    async killBackgroundProcessRaw(requestParameters: KillBackgroundProcessOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CommandKillResponse>> {
+        const requestOptions = await this.killBackgroundProcessRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => CommandKillResponseFromJSON(jsonValue));
     }
@@ -687,10 +800,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get list of all running background processes in the sandbox
-     * List running processes
+     * Creates request options for listBackgroundProcesses without sending the request
      */
-    async listBackgroundProcessesRaw(requestParameters: ListBackgroundProcessesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CommandListResponse>> {
+    async listBackgroundProcessesRequestOpts(requestParameters: ListBackgroundProcessesRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -708,14 +820,23 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/commands/list`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get list of all running background processes in the sandbox
+     * List running processes
+     */
+    async listBackgroundProcessesRaw(requestParameters: ListBackgroundProcessesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CommandListResponse>> {
+        const requestOptions = await this.listBackgroundProcessesRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => CommandListResponseFromJSON(jsonValue));
     }
@@ -730,10 +851,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get all active PTY sessions for a sandbox
-     * List PTY sessions
+     * Creates request options for listPTYSessions without sending the request
      */
-    async listPTYSessionsRaw(requestParameters: ListPTYSessionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListPTYSessions200Response>> {
+    async listPTYSessionsRequestOpts(requestParameters: ListPTYSessionsRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -751,14 +871,23 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/pty/sessions`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get all active PTY sessions for a sandbox
+     * List PTY sessions
+     */
+    async listPTYSessionsRaw(requestParameters: ListPTYSessionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListPTYSessions200Response>> {
+        const requestOptions = await this.listPTYSessionsRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ListPTYSessions200ResponseFromJSON(jsonValue));
     }
@@ -773,10 +902,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Resize the terminal dimensions for a PTY session
-     * Resize terminal
+     * Creates request options for resizeTerminal without sending the request
      */
-    async resizeTerminalRaw(requestParameters: ResizeTerminalOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async resizeTerminalRequestOpts(requestParameters: ResizeTerminalOperationRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -810,16 +938,25 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/pty/sessions/{sessionId}/resize`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-        urlPath = urlPath.replace(`{${"sessionId"}}`, encodeURIComponent(String(requestParameters['sessionId'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{sessionId}', encodeURIComponent(String(requestParameters['sessionId'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: ResizeTerminalRequestToJSON(requestParameters['resizeTerminalRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Resize the terminal dimensions for a PTY session
+     * Resize terminal
+     */
+    async resizeTerminalRaw(requestParameters: ResizeTerminalOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        const requestOptions = await this.resizeTerminalRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
@@ -834,10 +971,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Start a command as a background process and return its PID
-     * Start background process
+     * Creates request options for runBackgroundCommand without sending the request
      */
-    async runBackgroundCommandRaw(requestParameters: RunBackgroundCommandOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CommandRunResponse>> {
+    async runBackgroundCommandRequestOpts(requestParameters: RunBackgroundCommandOperationRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -864,15 +1000,24 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/commands/run`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: RunBackgroundCommandRequestToJSON(requestParameters['runBackgroundCommandRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Start a command as a background process and return its PID
+     * Start background process
+     */
+    async runBackgroundCommandRaw(requestParameters: RunBackgroundCommandOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CommandRunResponse>> {
+        const requestOptions = await this.runBackgroundCommandRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => CommandRunResponseFromJSON(jsonValue));
     }
@@ -887,10 +1032,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Send a PTY session action (`create`, `exec`, `input`, `resize`, `close`) to the sandbox agent.
-     * Execute PTY session action
+     * Creates request options for sessionExec without sending the request
      */
-    async sessionExecRaw(requestParameters: SessionExecOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SessionExecResponse>> {
+    async sessionExecRequestOpts(requestParameters: SessionExecOperationRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -917,15 +1061,24 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/session-exec`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: SessionExecRequestToJSON(requestParameters['sessionExecRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Send a PTY session action (`create`, `exec`, `input`, `resize`, `close`) to the sandbox agent.
+     * Execute PTY session action
+     */
+    async sessionExecRaw(requestParameters: SessionExecOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SessionExecResponse>> {
+        const requestOptions = await this.sessionExecRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SessionExecResponseFromJSON(jsonValue));
     }
@@ -940,10 +1093,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Execute a command in an existing PTY session and stream NDJSON output chunks.
-     * Stream PTY session command output
+     * Creates request options for sessionExecStream without sending the request
      */
-    async sessionExecStreamRaw(requestParameters: SessionExecStreamOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async sessionExecStreamRequestOpts(requestParameters: SessionExecStreamOperationRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -970,15 +1122,24 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/session-exec-stream`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: SessionExecStreamRequestToJSON(requestParameters['sessionExecStreamRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Execute a command in an existing PTY session and stream NDJSON output chunks.
+     * Stream PTY session command output
+     */
+    async sessionExecStreamRaw(requestParameters: SessionExecStreamOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+        const requestOptions = await this.sessionExecStreamRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         if (this.isJsonMime(response.headers.get('content-type'))) {
             return new runtime.JSONApiResponse<string>(response);
@@ -997,10 +1158,9 @@ export class ExecutionApi extends runtime.BaseAPI {
     }
 
     /**
-     * Block until a background process completes and return its exit code
-     * Wait for process completion
+     * Creates request options for waitForBackgroundProcess without sending the request
      */
-    async waitForBackgroundProcessRaw(requestParameters: WaitForBackgroundProcessRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CommandWaitResponse>> {
+    async waitForBackgroundProcessRequestOpts(requestParameters: WaitForBackgroundProcessRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -1027,15 +1187,24 @@ export class ExecutionApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/commands/wait`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: KillBackgroundProcessRequestToJSON(requestParameters['killBackgroundProcessRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Block until a background process completes and return its exit code
+     * Wait for process completion
+     */
+    async waitForBackgroundProcessRaw(requestParameters: WaitForBackgroundProcessRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CommandWaitResponse>> {
+        const requestOptions = await this.waitForBackgroundProcessRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => CommandWaitResponseFromJSON(jsonValue));
     }

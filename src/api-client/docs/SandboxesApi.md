@@ -8,10 +8,9 @@ All URIs are relative to *https://platform.void-run.com/api*
 | [**deleteSandbox**](SandboxesApi.md#deletesandbox) | **DELETE** /sandboxes/{id} | Delete sandbox |
 | [**getSandbox**](SandboxesApi.md#getsandbox) | **GET** /sandboxes/{id} | Get sandbox details |
 | [**listSandboxes**](SandboxesApi.md#listsandboxes) | **GET** /sandboxes | List sandboxes |
-| [**pauseSandbox**](SandboxesApi.md#pausesandbox) | **POST** /sandboxes/{id}/pause | Pause sandbox |
-| [**resumeSandbox**](SandboxesApi.md#resumesandbox) | **POST** /sandboxes/{id}/resume | Resume sandbox |
+| [**sleepSandbox**](SandboxesApi.md#sleepsandbox) | **POST** /sandboxes/{id}/sleep | Sleep sandbox |
 | [**startSandbox**](SandboxesApi.md#startsandbox) | **POST** /sandboxes/{id}/start | Start sandbox |
-| [**stopSandbox**](SandboxesApi.md#stopsandbox) | **POST** /sandboxes/{id}/stop | Stop sandbox |
+| [**wakeSandbox**](SandboxesApi.md#wakesandbox) | **POST** /sandboxes/{id}/wake | Wake sandbox |
 
 
 
@@ -237,7 +236,7 @@ example().catch(console.error);
 
 ## listSandboxes
 
-> ApiResponseSandboxesList listSandboxes(page, limit)
+> ApiResponseSandboxesList listSandboxes(page, limit, labels)
 
 List sandboxes
 
@@ -265,6 +264,8 @@ async function example() {
     page: 1,
     // number | Number of sandboxes per page (min 1, max 100, default from server config) (optional)
     limit: 50,
+    // string | Filter by labels as comma-separated `key=value` pairs. Sandboxes must match **all** given pairs (AND semantics); extra labels on the sandbox are ignored. Omit to return sandboxes regardless of labels. (optional)
+    labels: env=prod,team=backend,
   } satisfies ListSandboxesRequest;
 
   try {
@@ -286,6 +287,7 @@ example().catch(console.error);
 |------------- | ------------- | ------------- | -------------|
 | **page** | `number` | Page number (default 1, must be &gt;&#x3D; 1) | [Optional] [Defaults to `1`] |
 | **limit** | `number` | Number of sandboxes per page (min 1, max 100, default from server config) | [Optional] [Defaults to `undefined`] |
+| **labels** | `string` | Filter by labels as comma-separated &#x60;key&#x3D;value&#x60; pairs. Sandboxes must match **all** given pairs (AND semantics); extra labels on the sandbox are ignored. Omit to return sandboxes regardless of labels. | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -305,18 +307,19 @@ example().catch(console.error);
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | List of sandboxes with pagination metadata |  -  |
+| **400** | Malformed labels selector (bad &#x60;key&#x3D;value&#x60; syntax, invalid key format, or too many pairs) |  -  |
 | **401** | Unauthorized |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
-## pauseSandbox
+## sleepSandbox
 
-> SuccessResponse pauseSandbox(id)
+> SuccessResponse sleepSandbox(id)
 
-Pause sandbox
+Sleep sandbox
 
-Pause a running sandbox
+Put a running sandbox to sleep (state is persisted, VM process exits).
 
 ### Example
 
@@ -325,7 +328,7 @@ import {
   Configuration,
   SandboxesApi,
 } from '';
-import type { PauseSandboxRequest } from '';
+import type { SleepSandboxRequest } from '';
 
 async function example() {
   console.log("🚀 Testing  SDK...");
@@ -338,10 +341,10 @@ async function example() {
   const body = {
     // string
     id: 65ae1234567890abcdef1234,
-  } satisfies PauseSandboxRequest;
+  } satisfies SleepSandboxRequest;
 
   try {
-    const data = await api.pauseSandbox(body);
+    const data = await api.sleepSandbox(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -376,80 +379,7 @@ example().catch(console.error);
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Sandbox paused |  -  |
-| **401** | Unauthorized |  -  |
-| **404** | Sandbox not found |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-
-## resumeSandbox
-
-> SuccessResponse resumeSandbox(id)
-
-Resume sandbox
-
-Resume a paused sandbox
-
-### Example
-
-```ts
-import {
-  Configuration,
-  SandboxesApi,
-} from '';
-import type { ResumeSandboxRequest } from '';
-
-async function example() {
-  console.log("🚀 Testing  SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ApiKeyAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new SandboxesApi(config);
-
-  const body = {
-    // string
-    id: 65ae1234567890abcdef1234,
-  } satisfies ResumeSandboxRequest;
-
-  try {
-    const data = await api.resumeSandbox(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// Run the test
-example().catch(console.error);
-```
-
-### Parameters
-
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **id** | `string` |  | [Defaults to `undefined`] |
-
-### Return type
-
-[**SuccessResponse**](SuccessResponse.md)
-
-### Authorization
-
-[ApiKeyAuth](../README.md#ApiKeyAuth)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: `application/json`
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | Sandbox resumed |  -  |
+| **200** | Sandbox snapshotted |  -  |
 | **401** | Unauthorized |  -  |
 | **404** | Sandbox not found |  -  |
 
@@ -462,7 +392,7 @@ example().catch(console.error);
 
 Start sandbox
 
-Start a stopped sandbox
+Boot a stopped sandbox back into a running state. Accepts sandboxes in &#x60;snapshotted&#x60;, &#x60;killed&#x60;, or &#x60;error&#x60; status and restores from the latest on-disk snapshot. Returns 500 if no snapshot is available (the sandbox must then be deleted and recreated). 
 
 ### Example
 
@@ -523,20 +453,20 @@ example().catch(console.error);
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Sandbox started |  -  |
-| **400** | Invalid request (sandbox not stopped) |  -  |
 | **401** | Unauthorized |  -  |
 | **404** | Sandbox not found |  -  |
+| **500** | Start failed (e.g. no snapshot available, or restore error) |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
-## stopSandbox
+## wakeSandbox
 
-> SuccessResponse stopSandbox(id)
+> SuccessResponse wakeSandbox(id)
 
-Stop sandbox
+Wake sandbox
 
-Stop a running sandbox
+Wake a sleeping sandbox from its persisted state.
 
 ### Example
 
@@ -545,7 +475,7 @@ import {
   Configuration,
   SandboxesApi,
 } from '';
-import type { StopSandboxRequest } from '';
+import type { WakeSandboxRequest } from '';
 
 async function example() {
   console.log("🚀 Testing  SDK...");
@@ -558,10 +488,10 @@ async function example() {
   const body = {
     // string
     id: 65ae1234567890abcdef1234,
-  } satisfies StopSandboxRequest;
+  } satisfies WakeSandboxRequest;
 
   try {
-    const data = await api.stopSandbox(body);
+    const data = await api.wakeSandbox(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -596,7 +526,7 @@ example().catch(console.error);
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Sandbox stopped |  -  |
+| **200** | Sandbox restored |  -  |
 | **401** | Unauthorized |  -  |
 | **404** | Sandbox not found |  -  |
 

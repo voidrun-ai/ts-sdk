@@ -19,6 +19,9 @@ Name | Type
 `envVars` | { [key: string]: string; }
 `autoSleep` | boolean
 `region` | string
+`nodeId` | string
+`publishPorts` | Array&lt;number&gt;
+`labels` | { [key: string]: string; }
 
 ## Example
 
@@ -40,6 +43,9 @@ const example = {
   "envVars": {"DEBUG":"true","LOG_LEVEL":"info"},
   "autoSleep": true,
   "region": us-east-1,
+  "nodeId": host-fra-01,
+  "publishPorts": [8080],
+  "labels": {"env":"prod","team":"backend"},
 } satisfies Sandbox
 
 console.log(example)

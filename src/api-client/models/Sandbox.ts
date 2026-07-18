@@ -56,8 +56,8 @@ export interface Sandbox {
      */
     diskMB?: number;
     /**
-     * 
-     * @type {string}
+     * Lifecycle state. Terminal states `killed` and `deleted` may still appear in list responses for historical or cleanup rows.
+     * @type {SandboxStatusEnum}
      * @memberof Sandbox
      */
     status?: SandboxStatusEnum;
@@ -103,6 +103,18 @@ export interface Sandbox {
      * @memberof Sandbox
      */
     nodeId?: string;
+    /**
+     * Ports exposed through the public gateway. Empty when the sandbox is not publicly reachable.
+     * @type {Array<number>}
+     * @memberof Sandbox
+     */
+    publishPorts?: Array<number>;
+    /**
+     * Key-value labels attached at creation (immutable). Only present if set. See `GET /sandboxes` `labels` query parameter for filtering.
+     * @type {{ [key: string]: string; }}
+     * @memberof Sandbox
+     */
+    labels?: { [key: string]: string; };
 }
 
 
@@ -111,9 +123,10 @@ export interface Sandbox {
  */
 export const SandboxStatusEnum = {
     Running: 'running',
-    Stopped: 'stopped',
-    Paused: 'paused',
-    Error: 'error'
+    Snapshotted: 'snapshotted',
+    Error: 'error',
+    Killed: 'killed',
+    Deleted: 'deleted'
 } as const;
 export type SandboxStatusEnum = typeof SandboxStatusEnum[keyof typeof SandboxStatusEnum];
 
@@ -149,6 +162,8 @@ export function SandboxFromJSONTyped(json: any, ignoreDiscriminator: boolean): S
         'autoSleep': json['autoSleep'] == null ? undefined : json['autoSleep'],
         'region': json['region'] == null ? undefined : json['region'],
         'nodeId': json['nodeId'] == null ? undefined : json['nodeId'],
+        'publishPorts': json['publishPorts'] == null ? undefined : json['publishPorts'],
+        'labels': json['labels'] == null ? undefined : json['labels'],
     };
 }
 
@@ -177,6 +192,8 @@ export function SandboxToJSONTyped(value?: Sandbox | null, ignoreDiscriminator: 
         'autoSleep': value['autoSleep'],
         'region': value['region'],
         'nodeId': value['nodeId'],
+        'publishPorts': value['publishPorts'],
+        'labels': value['labels'],
     };
 }
 

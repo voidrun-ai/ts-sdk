@@ -72,7 +72,7 @@ export function ProcessInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'command': json['command'] == null ? undefined : json['command'],
         'startTime': json['startTime'] == null ? undefined : (new Date(json['startTime'])),
         'running': json['running'] == null ? undefined : json['running'],
-        'exitCode': json['exitCode'] == null ? undefined : json['exitCode'],
+        'exitCode': json['exitCode'] === undefined ? undefined : json['exitCode'] === null ? null : json['exitCode'],
     };
 }
 

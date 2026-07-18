@@ -35,6 +35,7 @@ export default class VRSandbox {
   public readonly region?: string;
   public readonly nodeId?: string;
   public readonly autoSleep?: boolean;
+  public readonly labels?: { [key: string]: string };
   public readonly fs: FS;
   public readonly pty: PTY;
   public readonly interpreter: CodeInterpreter;
@@ -83,6 +84,7 @@ export default class VRSandbox {
     this.region = sandbox.region;
     this.nodeId = sandbox.nodeId;
     this.autoSleep = sandbox.autoSleep;
+    this.labels = sandbox.labels;
     this.config = config;
     this.fs = new FS(sandbox.id, config);
     this.pty = new PTY(sandbox.id, config);
@@ -108,28 +110,37 @@ export default class VRSandbox {
     );
   }
 
+  /** Snapshot a running sandbox (`POST …/sleep`). */
+  async sleep() {
+    await wrapRequest(
+      this.sandboxesApi.sleepSandbox({
+        id: this.id,
+      }),
+    );
+  }
+
+  /** Restore a snapshotted sandbox (`POST …/wake`). */
+  async wake() {
+    await wrapRequest(
+      this.sandboxesApi.wakeSandbox({
+        id: this.id,
+      }),
+    );
+  }
+
+  /** Alias of `sleep()` (OpenAPI has no `/stop`). */
   async stop() {
-    await wrapRequest(
-      this.sandboxesApi.stopSandbox({
-        id: this.id,
-      }),
-    );
+    await this.sleep();
   }
 
+  /** Alias of `sleep()`. */
   async pause() {
-    await wrapRequest(
-      this.sandboxesApi.pauseSandbox({
-        id: this.id,
-      }),
-    );
+    await this.sleep();
   }
 
+  /** Alias of `wake()`. */
   async resume() {
-    await wrapRequest(
-      this.sandboxesApi.resumeSandbox({
-        id: this.id,
-      }),
-    );
+    await this.wake();
   }
 
   async info() {

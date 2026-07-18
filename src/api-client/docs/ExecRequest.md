@@ -11,7 +11,6 @@ Name | Type
 `timeout` | number
 `env` | { [key: string]: string; }
 `cwd` | string
-`background` | boolean
 
 ## Example
 
@@ -25,7 +24,6 @@ const example = {
   "timeout": 30,
   "env": {"PATH":"/usr/bin:/bin"},
   "cwd": /root,
-  "background": null,
 } satisfies ExecRequest
 
 console.log(example)

@@ -408,7 +408,7 @@ example().catch(console.error);
 
 Execute command (synchronous)
 
-Execute a command in the sandbox and wait for the result
+Execute a command in the sandbox and wait for the result. For a non-blocking start with a PID, use &#x60;POST /sandboxes/{id}/commands/run&#x60;.
 
 ### Example
 

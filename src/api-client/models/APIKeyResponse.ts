@@ -98,7 +98,7 @@ export function APIKeyResponseFromJSONTyped(json: any, ignoreDiscriminator: bool
         'scopes': json['scopes'] == null ? undefined : json['scopes'],
         'createdBy': json['createdBy'] == null ? undefined : json['createdBy'],
         'createdAt': json['createdAt'] == null ? undefined : (new Date(json['createdAt'])),
-        'lastUsedAt': json['lastUsedAt'] == null ? undefined : (new Date(json['lastUsedAt'])),
+        'lastUsedAt': json['lastUsedAt'] === undefined ? undefined : json['lastUsedAt'] === null ? null : (new Date(json['lastUsedAt'])),
         'isActive': json['isActive'] == null ? undefined : json['isActive'],
         'updatedAt': json['updatedAt'] == null ? undefined : (new Date(json['updatedAt'])),
     };

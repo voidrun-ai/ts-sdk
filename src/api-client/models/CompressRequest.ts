@@ -27,7 +27,7 @@ export interface CompressRequest {
     path: string;
     /**
      * 
-     * @type {string}
+     * @type {CompressRequestFormatEnum}
      * @memberof CompressRequest
      */
     format?: CompressRequestFormatEnum;

@@ -21,7 +21,7 @@ import { mapValues } from '../runtime';
 export interface SessionExecRequest {
     /**
      * 
-     * @type {string}
+     * @type {SessionExecRequestActionEnum}
      * @memberof SessionExecRequest
      */
     action: SessionExecRequestActionEnum;

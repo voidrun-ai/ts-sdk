@@ -12,30 +12,37 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  ApiResponseSandbox,
-  ApiResponseSandboxesList,
-  CreateSandbox201Response,
-  CreateSandboxRequest,
-  ErrorResponse,
-  SuccessResponse,
-} from '../models/index';
 import {
+    type ApiResponseSandbox,
     ApiResponseSandboxFromJSON,
     ApiResponseSandboxToJSON,
+} from '../models/ApiResponseSandbox';
+import {
+    type ApiResponseSandboxesList,
     ApiResponseSandboxesListFromJSON,
     ApiResponseSandboxesListToJSON,
+} from '../models/ApiResponseSandboxesList';
+import {
+    type CreateSandbox201Response,
     CreateSandbox201ResponseFromJSON,
     CreateSandbox201ResponseToJSON,
+} from '../models/CreateSandbox201Response';
+import {
+    type CreateSandboxRequest,
     CreateSandboxRequestFromJSON,
     CreateSandboxRequestToJSON,
+} from '../models/CreateSandboxRequest';
+import {
+    type ErrorResponse,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+} from '../models/ErrorResponse';
+import {
+    type SuccessResponse,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-} from '../models/index';
+} from '../models/SuccessResponse';
 
 export interface CreateSandboxOperationRequest {
     createSandboxRequest: CreateSandboxRequest;
@@ -52,13 +59,10 @@ export interface GetSandboxRequest {
 export interface ListSandboxesRequest {
     page?: number;
     limit?: number;
+    labels?: string;
 }
 
-export interface PauseSandboxRequest {
-    id: string;
-}
-
-export interface ResumeSandboxRequest {
+export interface SleepSandboxRequest {
     id: string;
 }
 
@@ -66,7 +70,7 @@ export interface StartSandboxRequest {
     id: string;
 }
 
-export interface StopSandboxRequest {
+export interface WakeSandboxRequest {
     id: string;
 }
 
@@ -76,10 +80,9 @@ export interface StopSandboxRequest {
 export class SandboxesApi extends runtime.BaseAPI {
 
     /**
-     * Create a new virtual machine sandbox
-     * Create sandbox
+     * Creates request options for createSandbox without sending the request
      */
-    async createSandboxRaw(requestParameters: CreateSandboxOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateSandbox201Response>> {
+    async createSandboxRequestOpts(requestParameters: CreateSandboxOperationRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['createSandboxRequest'] == null) {
             throw new runtime.RequiredError(
                 'createSandboxRequest',
@@ -100,13 +103,22 @@ export class SandboxesApi extends runtime.BaseAPI {
 
         let urlPath = `/sandboxes`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: CreateSandboxRequestToJSON(requestParameters['createSandboxRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create a new virtual machine sandbox
+     * Create sandbox
+     */
+    async createSandboxRaw(requestParameters: CreateSandboxOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateSandbox201Response>> {
+        const requestOptions = await this.createSandboxRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => CreateSandbox201ResponseFromJSON(jsonValue));
     }
@@ -121,10 +133,9 @@ export class SandboxesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete a sandbox and all its resources
-     * Delete sandbox
+     * Creates request options for deleteSandbox without sending the request
      */
-    async deleteSandboxRaw(requestParameters: DeleteSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async deleteSandboxRequestOpts(requestParameters: DeleteSandboxRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -142,14 +153,23 @@ export class SandboxesApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Delete a sandbox and all its resources
+     * Delete sandbox
+     */
+    async deleteSandboxRaw(requestParameters: DeleteSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        const requestOptions = await this.deleteSandboxRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
@@ -164,10 +184,9 @@ export class SandboxesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get detailed information about a specific sandbox
-     * Get sandbox details
+     * Creates request options for getSandbox without sending the request
      */
-    async getSandboxRaw(requestParameters: GetSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApiResponseSandbox>> {
+    async getSandboxRequestOpts(requestParameters: GetSandboxRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -185,14 +204,23 @@ export class SandboxesApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get detailed information about a specific sandbox
+     * Get sandbox details
+     */
+    async getSandboxRaw(requestParameters: GetSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApiResponseSandbox>> {
+        const requestOptions = await this.getSandboxRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ApiResponseSandboxFromJSON(jsonValue));
     }
@@ -207,10 +235,9 @@ export class SandboxesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get all sandboxes for the current organization with pagination support
-     * List sandboxes
+     * Creates request options for listSandboxes without sending the request
      */
-    async listSandboxesRaw(requestParameters: ListSandboxesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApiResponseSandboxesList>> {
+    async listSandboxesRequestOpts(requestParameters: ListSandboxesRequest): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         if (requestParameters['page'] != null) {
@@ -219,6 +246,10 @@ export class SandboxesApi extends runtime.BaseAPI {
 
         if (requestParameters['limit'] != null) {
             queryParameters['limit'] = requestParameters['limit'];
+        }
+
+        if (requestParameters['labels'] != null) {
+            queryParameters['labels'] = requestParameters['labels'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -230,12 +261,21 @@ export class SandboxesApi extends runtime.BaseAPI {
 
         let urlPath = `/sandboxes`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get all sandboxes for the current organization with pagination support
+     * List sandboxes
+     */
+    async listSandboxesRaw(requestParameters: ListSandboxesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApiResponseSandboxesList>> {
+        const requestOptions = await this.listSandboxesRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ApiResponseSandboxesListFromJSON(jsonValue));
     }
@@ -250,14 +290,13 @@ export class SandboxesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Pause a running sandbox
-     * Pause sandbox
+     * Creates request options for sleepSandbox without sending the request
      */
-    async pauseSandboxRaw(requestParameters: PauseSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async sleepSandboxRequestOpts(requestParameters: SleepSandboxRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling pauseSandbox().'
+                'Required parameter "id" was null or undefined when calling sleepSandbox().'
             );
         }
 
@@ -270,76 +309,41 @@ export class SandboxesApi extends runtime.BaseAPI {
         }
 
 
-        let urlPath = `/sandboxes/{id}/pause`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        let urlPath = `/sandboxes/{id}/sleep`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Put a running sandbox to sleep (state is persisted, VM process exits).
+     * Sleep sandbox
+     */
+    async sleepSandboxRaw(requestParameters: SleepSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        const requestOptions = await this.sleepSandboxRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * Pause a running sandbox
-     * Pause sandbox
+     * Put a running sandbox to sleep (state is persisted, VM process exits).
+     * Sleep sandbox
      */
-    async pauseSandbox(requestParameters: PauseSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.pauseSandboxRaw(requestParameters, initOverrides);
+    async sleepSandbox(requestParameters: SleepSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.sleepSandboxRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * Resume a paused sandbox
-     * Resume sandbox
+     * Creates request options for startSandbox without sending the request
      */
-    async resumeSandboxRaw(requestParameters: ResumeSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling resumeSandbox().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key"); // ApiKeyAuth authentication
-        }
-
-
-        let urlPath = `/sandboxes/{id}/resume`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Resume a paused sandbox
-     * Resume sandbox
-     */
-    async resumeSandbox(requestParameters: ResumeSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.resumeSandboxRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Start a stopped sandbox
-     * Start sandbox
-     */
-    async startSandboxRaw(requestParameters: StartSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async startSandboxRequestOpts(requestParameters: StartSandboxRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -357,20 +361,29 @@ export class SandboxesApi extends runtime.BaseAPI {
 
 
         let urlPath = `/sandboxes/{id}/start`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Boot a stopped sandbox back into a running state. Accepts sandboxes in `snapshotted`, `killed`, or `error` status and restores from the latest on-disk snapshot. Returns 500 if no snapshot is available (the sandbox must then be deleted and recreated). 
+     * Start sandbox
+     */
+    async startSandboxRaw(requestParameters: StartSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        const requestOptions = await this.startSandboxRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * Start a stopped sandbox
+     * Boot a stopped sandbox back into a running state. Accepts sandboxes in `snapshotted`, `killed`, or `error` status and restores from the latest on-disk snapshot. Returns 500 if no snapshot is available (the sandbox must then be deleted and recreated). 
      * Start sandbox
      */
     async startSandbox(requestParameters: StartSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
@@ -379,14 +392,13 @@ export class SandboxesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Stop a running sandbox
-     * Stop sandbox
+     * Creates request options for wakeSandbox without sending the request
      */
-    async stopSandboxRaw(requestParameters: StopSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async wakeSandboxRequestOpts(requestParameters: WakeSandboxRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling stopSandbox().'
+                'Required parameter "id" was null or undefined when calling wakeSandbox().'
             );
         }
 
@@ -399,25 +411,34 @@ export class SandboxesApi extends runtime.BaseAPI {
         }
 
 
-        let urlPath = `/sandboxes/{id}/stop`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        let urlPath = `/sandboxes/{id}/wake`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Wake a sleeping sandbox from its persisted state.
+     * Wake sandbox
+     */
+    async wakeSandboxRaw(requestParameters: WakeSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        const requestOptions = await this.wakeSandboxRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * Stop a running sandbox
-     * Stop sandbox
+     * Wake a sleeping sandbox from its persisted state.
+     * Wake sandbox
      */
-    async stopSandbox(requestParameters: StopSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.stopSandboxRaw(requestParameters, initOverrides);
+    async wakeSandbox(requestParameters: WakeSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.wakeSandboxRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

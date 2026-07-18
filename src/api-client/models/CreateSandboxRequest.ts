@@ -44,13 +44,13 @@ export interface CreateSandboxRequest {
      */
     mem?: number;
     /**
-     * 
+     * Organization that owns the sandbox. When omitted, derived from the authenticated API key (the key's org). When provided, must match the key's organization or the request is rejected.
      * @type {string}
      * @memberof CreateSandboxRequest
      */
     orgId?: string;
     /**
-     * 
+     * User attributed as the sandbox creator. When omitted, derived from the API key (typically the key creator). When provided, must be an owner or member of the resolved org or the request is rejected.
      * @type {string}
      * @memberof CreateSandboxRequest
      */
@@ -68,7 +68,7 @@ export interface CreateSandboxRequest {
      */
     envVars?: { [key: string]: string; };
     /**
-     * If true, the sandbox will be auto-paused due to inactivity
+     * If true, the sandbox is auto-snapshotted after idle and wakes on the next request
      * @type {boolean}
      * @memberof CreateSandboxRequest
      */
@@ -79,6 +79,18 @@ export interface CreateSandboxRequest {
      * @memberof CreateSandboxRequest
      */
     region?: string;
+    /**
+     * Sandbox ports to expose through the public gateway. Each entry is published as a separate public URL once the VM is running.
+     * @type {Array<number>}
+     * @memberof CreateSandboxRequest
+     */
+    publishPorts?: Array<number>;
+    /**
+     * Key-value labels attached at creation. Immutable after the sandbox is created. Max 5 labels; keys and values may each contain up to 20 characters. Keys match `^[a-z0-9]([-a-z0-9_]*[a-z0-9])?$`; neither keys nor values may contain `,` or `=`.
+     * @type {{ [key: string]: string; }}
+     * @memberof CreateSandboxRequest
+     */
+    labels?: { [key: string]: string; };
 }
 
 /**
@@ -109,6 +121,8 @@ export function CreateSandboxRequestFromJSONTyped(json: any, ignoreDiscriminator
         'envVars': json['envVars'] == null ? undefined : json['envVars'],
         'autoSleep': json['autoSleep'] == null ? undefined : json['autoSleep'],
         'region': json['region'] == null ? undefined : json['region'],
+        'publishPorts': json['publishPorts'] == null ? undefined : json['publishPorts'],
+        'labels': json['labels'] == null ? undefined : json['labels'],
     };
 }
 
@@ -133,6 +147,8 @@ export function CreateSandboxRequestToJSONTyped(value?: CreateSandboxRequest | n
         'envVars': value['envVars'],
         'autoSleep': value['autoSleep'],
         'region': value['region'],
+        'publishPorts': value['publishPorts'],
+        'labels': value['labels'],
     };
 }
 

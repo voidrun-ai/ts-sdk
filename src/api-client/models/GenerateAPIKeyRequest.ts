@@ -20,7 +20,7 @@ import { mapValues } from '../runtime';
  */
 export interface GenerateAPIKeyRequest {
     /**
-     * A descriptive name for the API key
+     * A descriptive name for the API key, up to 25 characters
      * @type {string}
      * @memberof GenerateAPIKeyRequest
      */

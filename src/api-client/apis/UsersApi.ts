@@ -12,18 +12,17 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  ErrorResponse,
-  GetCurrentUser200Response,
-} from '../models/index';
 import {
+    type ErrorResponse,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+} from '../models/ErrorResponse';
+import {
+    type GetCurrentUser200Response,
     GetCurrentUser200ResponseFromJSON,
     GetCurrentUser200ResponseToJSON,
-} from '../models/index';
+} from '../models/GetCurrentUser200Response';
 
 /**
  * 
@@ -31,10 +30,9 @@ import {
 export class UsersApi extends runtime.BaseAPI {
 
     /**
-     * Get the authenticated user\'s profile information
-     * Get current user
+     * Creates request options for getCurrentUser without sending the request
      */
-    async getCurrentUserRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetCurrentUser200Response>> {
+    async getCurrentUserRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -46,12 +44,21 @@ export class UsersApi extends runtime.BaseAPI {
 
         let urlPath = `/users/me`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get the authenticated user\'s profile information
+     * Get current user
+     */
+    async getCurrentUserRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetCurrentUser200Response>> {
+        const requestOptions = await this.getCurrentUserRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GetCurrentUser200ResponseFromJSON(jsonValue));
     }

@@ -21,7 +21,7 @@ import { mapValues } from '../runtime';
 export interface FileEvent {
     /**
      * Type of filesystem event
-     * @type {string}
+     * @type {FileEventTypeEnum}
      * @memberof FileEvent
      */
     type?: FileEventTypeEnum;

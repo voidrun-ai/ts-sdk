@@ -12,15 +12,12 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  GetVersion200Response,
-} from '../models/index';
 import {
+    type GetVersion200Response,
     GetVersion200ResponseFromJSON,
     GetVersion200ResponseToJSON,
-} from '../models/index';
+} from '../models/GetVersion200Response';
 
 /**
  * 
@@ -28,10 +25,9 @@ import {
 export class SystemApi extends runtime.BaseAPI {
 
     /**
-     * Get server version, commit, and build metadata.
-     * Get server version
+     * Creates request options for getVersion without sending the request
      */
-    async getVersionRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetVersion200Response>> {
+    async getVersionRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -39,12 +35,21 @@ export class SystemApi extends runtime.BaseAPI {
 
         let urlPath = `/version`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get server version, commit, and build metadata.
+     * Get server version
+     */
+    async getVersionRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetVersion200Response>> {
+        const requestOptions = await this.getVersionRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GetVersion200ResponseFromJSON(jsonValue));
     }

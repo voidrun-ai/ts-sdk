@@ -12,18 +12,17 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  ErrorResponse,
-  Image,
-} from '../models/index';
 import {
+    type ErrorResponse,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+} from '../models/ErrorResponse';
+import {
+    type Image,
     ImageFromJSON,
     ImageToJSON,
-} from '../models/index';
+} from '../models/Image';
 
 export interface GetImageRequest {
     id: string;
@@ -39,10 +38,9 @@ export interface GetImageByNameRequest {
 export class ImagesApi extends runtime.BaseAPI {
 
     /**
-     * Get detailed information about a specific image
-     * Get image by ID
+     * Creates request options for getImage without sending the request
      */
-    async getImageRaw(requestParameters: GetImageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Image>> {
+    async getImageRequestOpts(requestParameters: GetImageRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -60,14 +58,23 @@ export class ImagesApi extends runtime.BaseAPI {
 
 
         let urlPath = `/images/{id}`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get detailed information about a specific image
+     * Get image by ID
+     */
+    async getImageRaw(requestParameters: GetImageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Image>> {
+        const requestOptions = await this.getImageRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ImageFromJSON(jsonValue));
     }
@@ -82,10 +89,9 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get an image by its name
-     * Get image by name
+     * Creates request options for getImageByName without sending the request
      */
-    async getImageByNameRaw(requestParameters: GetImageByNameRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Image>> {
+    async getImageByNameRequestOpts(requestParameters: GetImageByNameRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['name'] == null) {
             throw new runtime.RequiredError(
                 'name',
@@ -103,14 +109,23 @@ export class ImagesApi extends runtime.BaseAPI {
 
 
         let urlPath = `/images/name/{name}`;
-        urlPath = urlPath.replace(`{${"name"}}`, encodeURIComponent(String(requestParameters['name'])));
+        urlPath = urlPath.replace('{name}', encodeURIComponent(String(requestParameters['name'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get an image by its name
+     * Get image by name
+     */
+    async getImageByNameRaw(requestParameters: GetImageByNameRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Image>> {
+        const requestOptions = await this.getImageByNameRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ImageFromJSON(jsonValue));
     }
@@ -125,10 +140,9 @@ export class ImagesApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get all available base images
-     * List images
+     * Creates request options for listImages without sending the request
      */
-    async listImagesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Image>>> {
+    async listImagesRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -140,18 +154,27 @@ export class ImagesApi extends runtime.BaseAPI {
 
         let urlPath = `/images`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get active base images visible to the organization (inactive or superseded images are omitted)
+     * List images
+     */
+    async listImagesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Image>>> {
+        const requestOptions = await this.listImagesRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ImageFromJSON));
     }
 
     /**
-     * Get all available base images
+     * Get active base images visible to the organization (inactive or superseded images are omitted)
      * List images
      */
     async listImages(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Image>> {

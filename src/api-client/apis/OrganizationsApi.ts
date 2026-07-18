@@ -12,33 +12,42 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  APIKeyResponse,
-  ActivateAPIKeyRequest,
-  ErrorResponse,
-  GenerateAPIKeyRequest,
-  GeneratedAPIKeyResponse,
-  GetOrgUsers200Response,
-  SuccessResponse,
-} from '../models/index';
 import {
+    type APIKeyResponse,
     APIKeyResponseFromJSON,
     APIKeyResponseToJSON,
+} from '../models/APIKeyResponse';
+import {
+    type ActivateAPIKeyRequest,
     ActivateAPIKeyRequestFromJSON,
     ActivateAPIKeyRequestToJSON,
+} from '../models/ActivateAPIKeyRequest';
+import {
+    type ErrorResponse,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+} from '../models/ErrorResponse';
+import {
+    type GenerateAPIKeyRequest,
     GenerateAPIKeyRequestFromJSON,
     GenerateAPIKeyRequestToJSON,
+} from '../models/GenerateAPIKeyRequest';
+import {
+    type GeneratedAPIKeyResponse,
     GeneratedAPIKeyResponseFromJSON,
     GeneratedAPIKeyResponseToJSON,
+} from '../models/GeneratedAPIKeyResponse';
+import {
+    type GetOrgUsers200Response,
     GetOrgUsers200ResponseFromJSON,
     GetOrgUsers200ResponseToJSON,
+} from '../models/GetOrgUsers200Response';
+import {
+    type SuccessResponse,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-} from '../models/index';
+} from '../models/SuccessResponse';
 
 export interface ActivateAPIKeyOperationRequest {
     keyId: string;
@@ -63,10 +72,9 @@ export interface TouchAPIKeyRequest {
 export class OrganizationsApi extends runtime.BaseAPI {
 
     /**
-     * Toggle an API key\'s active status. The organization is derived from the API key context.
-     * Activate or deactivate API key
+     * Creates request options for activateAPIKey without sending the request
      */
-    async activateAPIKeyRaw(requestParameters: ActivateAPIKeyOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async activateAPIKeyRequestOpts(requestParameters: ActivateAPIKeyOperationRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['keyId'] == null) {
             throw new runtime.RequiredError(
                 'keyId',
@@ -93,15 +101,24 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
 
         let urlPath = `/orgs/apikeys/{keyId}/activate`;
-        urlPath = urlPath.replace(`{${"keyId"}}`, encodeURIComponent(String(requestParameters['keyId'])));
+        urlPath = urlPath.replace('{keyId}', encodeURIComponent(String(requestParameters['keyId'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: ActivateAPIKeyRequestToJSON(requestParameters['activateAPIKeyRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Toggle an API key\'s active status. The organization is derived from the API key context.
+     * Activate or deactivate API key
+     */
+    async activateAPIKeyRaw(requestParameters: ActivateAPIKeyOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        const requestOptions = await this.activateAPIKeyRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
@@ -116,10 +133,9 @@ export class OrganizationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a new API key for the organization. The plain key is only returned once. The organization is derived from the API key context.
-     * Generate new API key
+     * Creates request options for generateAPIKey without sending the request
      */
-    async generateAPIKeyRaw(requestParameters: GenerateAPIKeyOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GeneratedAPIKeyResponse>> {
+    async generateAPIKeyRequestOpts(requestParameters: GenerateAPIKeyOperationRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['generateAPIKeyRequest'] == null) {
             throw new runtime.RequiredError(
                 'generateAPIKeyRequest',
@@ -140,13 +156,22 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
         let urlPath = `/orgs/apikeys`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
             body: GenerateAPIKeyRequestToJSON(requestParameters['generateAPIKeyRequest']),
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Create a new API key for the organization. The plain key is only returned once. The organization is derived from the API key context.
+     * Generate new API key
+     */
+    async generateAPIKeyRaw(requestParameters: GenerateAPIKeyOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GeneratedAPIKeyResponse>> {
+        const requestOptions = await this.generateAPIKeyRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GeneratedAPIKeyResponseFromJSON(jsonValue));
     }
@@ -161,10 +186,9 @@ export class OrganizationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get users who are members of the authenticated user\'s organization. The organization is derived from the API key context.
-     * List organization users
+     * Creates request options for getOrgUsers without sending the request
      */
-    async getOrgUsersRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetOrgUsers200Response>> {
+    async getOrgUsersRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -176,12 +200,21 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
         let urlPath = `/orgs/users`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get users who are members of the authenticated user\'s organization. The organization is derived from the API key context.
+     * List organization users
+     */
+    async getOrgUsersRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetOrgUsers200Response>> {
+        const requestOptions = await this.getOrgUsersRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => GetOrgUsers200ResponseFromJSON(jsonValue));
     }
@@ -196,10 +229,9 @@ export class OrganizationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Get all API keys for the authenticated user\'s organization. The organization is derived from the API key context.
-     * List API keys
+     * Creates request options for listAPIKeys without sending the request
      */
-    async listAPIKeysRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<APIKeyResponse>>> {
+    async listAPIKeysRequestOpts(): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -211,12 +243,21 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
         let urlPath = `/orgs/apikeys`;
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Get all API keys for the authenticated user\'s organization. The organization is derived from the API key context.
+     * List API keys
+     */
+    async listAPIKeysRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<APIKeyResponse>>> {
+        const requestOptions = await this.listAPIKeysRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(APIKeyResponseFromJSON));
     }
@@ -231,10 +272,9 @@ export class OrganizationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Delete/revoke an API key. The organization is derived from the API key context.
-     * Revoke API key
+     * Creates request options for revokeAPIKey without sending the request
      */
-    async revokeAPIKeyRaw(requestParameters: RevokeAPIKeyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async revokeAPIKeyRequestOpts(requestParameters: RevokeAPIKeyRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['keyId'] == null) {
             throw new runtime.RequiredError(
                 'keyId',
@@ -252,14 +292,23 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
 
         let urlPath = `/orgs/apikeys/{keyId}`;
-        urlPath = urlPath.replace(`{${"keyId"}}`, encodeURIComponent(String(requestParameters['keyId'])));
+        urlPath = urlPath.replace('{keyId}', encodeURIComponent(String(requestParameters['keyId'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Delete/revoke an API key. The organization is derived from the API key context.
+     * Revoke API key
+     */
+    async revokeAPIKeyRaw(requestParameters: RevokeAPIKeyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        const requestOptions = await this.revokeAPIKeyRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
@@ -274,10 +323,9 @@ export class OrganizationsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Update the API key last-used timestamp. The organization is derived from the API key context.
-     * Touch API key
+     * Creates request options for touchAPIKey without sending the request
      */
-    async touchAPIKeyRaw(requestParameters: TouchAPIKeyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async touchAPIKeyRequestOpts(requestParameters: TouchAPIKeyRequest): Promise<runtime.RequestOpts> {
         if (requestParameters['keyId'] == null) {
             throw new runtime.RequiredError(
                 'keyId',
@@ -295,14 +343,23 @@ export class OrganizationsApi extends runtime.BaseAPI {
 
 
         let urlPath = `/orgs/apikeys/{keyId}/touch`;
-        urlPath = urlPath.replace(`{${"keyId"}}`, encodeURIComponent(String(requestParameters['keyId'])));
+        urlPath = urlPath.replace('{keyId}', encodeURIComponent(String(requestParameters['keyId'])));
 
-        const response = await this.request({
+        return {
             path: urlPath,
             method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
+        };
+    }
+
+    /**
+     * Update the API key last-used timestamp. The organization is derived from the API key context.
+     * Touch API key
+     */
+    async touchAPIKeyRaw(requestParameters: TouchAPIKeyRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        const requestOptions = await this.touchAPIKeyRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }

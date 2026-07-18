@@ -58,7 +58,7 @@ export function CommandWaitResponseFromJSONTyped(json: any, ignoreDiscriminator:
         
         'success': json['success'] == null ? undefined : json['success'],
         'exitCode': json['exitCode'] == null ? undefined : json['exitCode'],
-        'error': json['error'] == null ? undefined : json['error'],
+        'error': json['error'] === undefined ? undefined : json['error'] === null ? null : json['error'],
     };
 }
 

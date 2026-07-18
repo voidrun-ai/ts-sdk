@@ -84,6 +84,7 @@ export class VoidRun {
       envVars,
       autoSleep,
       region,
+      labels,
     } = options;
 
     const response = await wrapRequest<CreateSandbox201Response>(
@@ -99,6 +100,7 @@ export class VoidRun {
           envVars: envVars,
           autoSleep: autoSleep,
           region: region,
+          labels: labels,
         },
       }),
     );
@@ -116,11 +118,25 @@ export class VoidRun {
     return new VRSandbox(response.data as SandboxModel, this.config);
   }
 
-  async listSandboxes(options: { page?: number; limit?: number } = {}) {
+  async listSandboxes(
+    options: {
+      page?: number;
+      limit?: number;
+      /** Filter by labels; sandboxes must match all given key-value pairs (AND). */
+      labels?: Record<string, string>;
+    } = {},
+  ) {
+    const labels = options.labels
+      ? Object.entries(options.labels)
+          .map(([k, v]) => `${k}=${v}`)
+          .join(',')
+      : undefined;
+
     const response = await wrapRequest<ApiResponseSandboxesList>(
       this.sandboxesApi.listSandboxes({
         page: options.page,
         limit: options.limit,
+        labels,
       }),
     );
     return {

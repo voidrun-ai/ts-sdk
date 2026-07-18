@@ -71,7 +71,7 @@ export function SessionExecResponseFromJSONTyped(json: any, ignoreDiscriminator:
         'success': json['success'] == null ? undefined : json['success'],
         'sessionId': json['sessionId'] == null ? undefined : json['sessionId'],
         'output': json['output'] == null ? undefined : json['output'],
-        'error': json['error'] == null ? undefined : json['error'],
+        'error': json['error'] === undefined ? undefined : json['error'] === null ? null : json['error'],
         'exitCode': json['exitCode'] == null ? undefined : json['exitCode'],
     };
 }

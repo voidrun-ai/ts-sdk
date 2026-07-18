@@ -32,6 +32,7 @@ The public surface is aligned with the **[VoidRun Python SDK](https://pypi.org/p
 ## Features
 
 - 🏗️ **Sandbox Management** - Create, list, start, stop, pause, resume, and remove sandboxes
+- 🏷️ **Sandbox Labels** - Attach immutable labels at creation and filter lists with AND semantics
 - 🚀 **Code Execution** - Synchronous `exec` (no `background` flag) and optional SSE streaming; use **Background Commands** for PIDs
 - 📁 **File Operations** - Create, read, delete, compress, and extract files
 - 👀 **File Watching** - Monitor file changes in real-time via WebSocket
@@ -115,25 +116,42 @@ const sandbox = await vr.createSandbox({
   envVars: {                // Optional: Environment variables
     DEBUG: 'true',
     LOG_LEVEL: 'info'
-  }
+  },
+  labels: {                 // Optional: immutable key-value metadata
+    env: "prod",
+    team: "api"
+  },
 });
 
-// List all sandboxes
-const { sandboxes, meta } = await vr.listSandboxes();
+// List sandboxes matching every supplied label
+const { sandboxes, meta } = await vr.listSandboxes({
+  labels: { env: "prod", team: "api" }
+});
 console.log(`Total sandboxes: ${sandboxes.length}`);
 
 // Get a specific sandbox
 const existingSandbox = await vr.getSandbox(sandboxId);
 
 // Sandbox lifecycle management
-await sandbox.start();    // Start a stopped sandbox
-await sandbox.stop();     // Stop a running sandbox
-await sandbox.pause();    // Pause a running sandbox
-await sandbox.resume();   // Resume a paused sandbox
+await sandbox.start();    // Boot stopped/error sandbox
+await sandbox.sleep();    // Snapshot a running sandbox
+await sandbox.wake();     // Restore a snapshotted sandbox
+// Aliases: stop/pause → sleep, resume → wake
+await sandbox.pause();
+await sandbox.resume();
 
 // Remove a sandbox
 await sandbox.remove();
 ```
+
+Labels are set only when the sandbox is created and cannot be changed later.
+Each sandbox supports at most **5** labels. Keys and values are each at most
+**20** characters. Keys use lowercase letters or numbers, may contain `-` or
+`_`, and must start and end with a letter or number. Keys and values cannot
+contain `,` or `=`.
+
+`listSandboxes({ labels })` matches sandboxes containing **all** supplied
+key-value pairs. Sandboxes may contain additional labels.
 
 ### Code execution
 
@@ -447,7 +465,8 @@ new VoidRun(options?: VoidRunConfig)
   - `sync?: boolean` - Sync mode (default: true)
   - `envVars?: Record<string, string>` - Environment variables
   - `autoSleep?: boolean`, `region?: string` - optional passthrough fields
-- `listSandboxes(options?: { page?: number; limit?: number })` - Returns `{ sandboxes, meta }` where `meta` has `total`, `page`, `limit`, `totalPages`
+  - `labels?: Record<string, string>` - Immutable labels attached at creation (max 5; keys and values max 20 characters)
+- `listSandboxes(options?: { page?: number; limit?: number; labels?: Record<string, string> })` - Returns `{ sandboxes, meta }`; every supplied label must match
 - `getSandbox(id: string)` - Get a specific sandbox
 - `removeSandbox(id: string)` - Delete a sandbox by id
 
@@ -466,6 +485,7 @@ Represents an isolated sandbox environment.
 - `createdBy: string` - Creator ID
 - `status: string` - Sandbox status
 - `envVars?: { [key: string]: string }` - Environment variables
+- `labels?: { [key: string]: string }` - Immutable labels assigned at creation
 - `region?: string`, `autoSleep?: boolean` - Optional metadata
 - `fs: FS` - File system interface
 - `pty: PTY` - PTY interface
@@ -486,10 +506,11 @@ Represents an isolated sandbox environment.
   - `handlers.signal?: AbortSignal` - Abort signal
 - `execStream(request: ExecRequest, handlers: ExecStreamHandlers)` - Streaming execution
 - `runCode(code: string, options?: CodeExecutionOptions)` - Execute code
-- `start()` - Start the sandbox
-- `stop()` - Stop the sandbox
-- `pause()` - Pause the sandbox
-- `resume()` - Resume the sandbox
+- `start()` - Boot a stopped/error sandbox
+- `sleep()` - Snapshot a running sandbox (`POST …/sleep`)
+- `wake()` - Restore a snapshotted sandbox (`POST …/wake`)
+- `stop()` / `pause()` - Aliases of `sleep()`
+- `resume()` - Alias of `wake()`
 - `remove()` - Delete the sandbox
 - `info()` - Returns the same sandbox instance (`Promise<this>`)
 
@@ -856,6 +877,7 @@ Ensure your sandbox parameters are valid:
 
 - `mem`: minimum 1024 MB
 - `cpu`: minimum 1 core
+- `labels`: max 5; keys and values max 20 characters; key special characters are limited to `-` and `_`
 
 ```typescript
 const sandbox = await vr.createSandbox({

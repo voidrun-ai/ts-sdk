@@ -65,7 +65,7 @@ export function ApiResponseSandboxFromJSONTyped(json: any, ignoreDiscriminator: 
     return {
         
         'success': json['success'] == null ? undefined : json['success'],
-        'message': json['message'] == null ? undefined : json['message'],
+        'message': json['message'] === undefined ? undefined : json['message'] === null ? null : json['message'],
         'data': json['data'] == null ? undefined : SandboxFromJSON(json['data']),
     };
 }

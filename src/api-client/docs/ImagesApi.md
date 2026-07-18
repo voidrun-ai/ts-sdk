@@ -162,7 +162,7 @@ example().catch(console.error);
 
 List images
 
-Get all available base images
+Get active base images visible to the organization (inactive or superseded images are omitted)
 
 ### Example
 

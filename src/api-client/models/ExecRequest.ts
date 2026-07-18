@@ -32,7 +32,7 @@ export interface ExecRequest {
      */
     args?: Array<string>;
     /**
-     * Timeout in seconds (ignored if background=true)
+     * Timeout in seconds
      * @type {number}
      * @memberof ExecRequest
      */
@@ -49,12 +49,6 @@ export interface ExecRequest {
      * @memberof ExecRequest
      */
     cwd?: string;
-    /**
-     * If true, starts process in background and returns PID immediately
-     * @type {boolean}
-     * @memberof ExecRequest
-     */
-    background?: boolean;
 }
 
 /**
@@ -80,7 +74,6 @@ export function ExecRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean
         'timeout': json['timeout'] == null ? undefined : json['timeout'],
         'env': json['env'] == null ? undefined : json['env'],
         'cwd': json['cwd'] == null ? undefined : json['cwd'],
-        'background': json['background'] == null ? undefined : json['background'],
     };
 }
 
@@ -100,7 +93,6 @@ export function ExecRequestToJSONTyped(value?: ExecRequest | null, ignoreDiscrim
         'timeout': value['timeout'],
         'env': value['env'],
         'cwd': value['cwd'],
-        'background': value['background'],
     };
 }
 
