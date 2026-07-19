@@ -36,6 +36,7 @@ export default class VRSandbox {
   public readonly nodeId?: string;
   public readonly autoSleep?: boolean;
   public readonly labels?: { [key: string]: string };
+  public readonly publishPorts?: number[];
   public readonly fs: FS;
   public readonly pty: PTY;
   public readonly interpreter: CodeInterpreter;
@@ -85,6 +86,7 @@ export default class VRSandbox {
     this.nodeId = sandbox.nodeId;
     this.autoSleep = sandbox.autoSleep;
     this.labels = sandbox.labels;
+    this.publishPorts = sandbox.publishPorts;
     this.config = config;
     this.fs = new FS(sandbox.id, config);
     this.pty = new PTY(sandbox.id, config);

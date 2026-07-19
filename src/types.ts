@@ -13,6 +13,7 @@ export type SandboxOptions = {
   autoSleep?: boolean;
   region?: string;
   labels?: Record<string, string>;
+  publishPorts?: number[];
 };
 
 export type VoidRunConfig = {

@@ -85,6 +85,7 @@ export class VoidRun {
       autoSleep,
       region,
       labels,
+      publishPorts,
     } = options;
 
     const response = await wrapRequest<CreateSandbox201Response>(
@@ -101,6 +102,7 @@ export class VoidRun {
           autoSleep: autoSleep,
           region: region,
           labels: labels,
+          publishPorts: publishPorts,
         },
       }),
     );

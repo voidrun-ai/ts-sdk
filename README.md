@@ -121,7 +121,12 @@ const sandbox = await vr.createSandbox({
     env: "prod",
     team: "api"
   },
+  publishPorts: [8080],     // Optional: expose ports as public URLs (set at create time only)
 });
+
+// Public URLs are only available for ports declared in publishPorts at creation
+const urls = await sandbox.getPublicUrls();
+const web = await sandbox.getPublicUrl(8080);
 
 // List sandboxes matching every supplied label
 const { sandboxes, meta } = await vr.listSandboxes({
@@ -149,6 +154,11 @@ Each sandbox supports at most **5** labels. Keys and values are each at most
 **20** characters. Keys use lowercase letters or numbers, may contain `-` or
 `_`, and must start and end with a letter or number. Keys and values cannot
 contain `,` or `=`.
+
+`publishPorts` must also be provided at creation time to expose ports as public
+HTTPS URLs. Pass up to **4** ports (each `1–65535`, no duplicates); the created
+sandbox echoes them back on `sandbox.publishPorts`. Ports that are not published
+at creation are not reachable via `getPublicUrls()`.
 
 `listSandboxes({ labels })` matches sandboxes containing **all** supplied
 key-value pairs. Sandboxes may contain additional labels.
