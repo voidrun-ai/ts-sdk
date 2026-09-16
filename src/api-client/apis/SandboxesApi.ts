@@ -34,6 +34,10 @@ import {
     CreateSandboxRequestToJSON,
 } from '../models/CreateSandboxRequest';
 import {
+    type UpdateSandboxRequest,
+    UpdateSandboxRequestToJSON,
+} from '../models/UpdateSandboxRequest';
+import {
     type ErrorResponse,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
@@ -68,6 +72,11 @@ export interface SleepSandboxRequest {
 
 export interface StartSandboxRequest {
     id: string;
+}
+
+export interface UpdateSandboxOperationRequest {
+    id: string;
+    updateSandboxRequest: UpdateSandboxRequest;
 }
 
 export interface WakeSandboxRequest {
@@ -231,6 +240,65 @@ export class SandboxesApi extends runtime.BaseAPI {
      */
     async getSandbox(requestParameters: GetSandboxRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApiResponseSandbox> {
         const response = await this.getSandboxRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for updateSandbox without sending the request
+     */
+    async updateSandboxRequestOpts(requestParameters: UpdateSandboxOperationRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling updateSandbox().'
+            );
+        }
+        if (requestParameters['updateSandboxRequest'] == null) {
+            throw new runtime.RequiredError(
+                'updateSandboxRequest',
+                'Required parameter "updateSandboxRequest" was null or undefined when calling updateSandbox().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-API-Key"] = await this.configuration.apiKey("X-API-Key");
+        }
+
+        let urlPath = `/sandboxes/{id}`;
+        urlPath = urlPath.replace('{id}', encodeURIComponent(String(requestParameters['id'])));
+
+        return {
+            path: urlPath,
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpdateSandboxRequestToJSON(requestParameters['updateSandboxRequest']),
+        };
+    }
+
+    /**
+     * Update mutable sandbox fields
+     * Update sandbox
+     */
+    async updateSandboxRaw(requestParameters: UpdateSandboxOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApiResponseSandbox>> {
+        const requestOptions = await this.updateSandboxRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ApiResponseSandboxFromJSON(jsonValue));
+    }
+
+    /**
+     * Update mutable sandbox fields
+     * Update sandbox
+     */
+    async updateSandbox(requestParameters: UpdateSandboxOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApiResponseSandbox> {
+        const response = await this.updateSandboxRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

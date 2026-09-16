@@ -55,3 +55,4 @@ export * from './StartWatch200Response';
 export * from './StartWatch200ResponseData';
 export * from './StartWatchRequest';
 export * from './SuccessResponse';
+export * from './UpdateSandboxRequest';
