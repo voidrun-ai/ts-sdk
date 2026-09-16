@@ -1,5 +1,5 @@
 import {
-  type Configuration,
+  Configuration,
   type ExecRequest,
   ExecutionApi,
   type Sandbox,
@@ -20,7 +20,25 @@ import {
   type SandboxOptions,
   type SandboxPublicURL,
 } from './types.js';
+import { nodeApiBaseURL } from './utils/nodeUrl.js';
 import { wrapRequest } from './utils/runtime.js';
+
+function configForNode(config: Configuration, nodeId?: string): Configuration {
+  const basePath = nodeApiBaseURL(config.basePath, nodeId);
+  if (basePath === config.basePath) return config;
+  return new Configuration({
+    basePath,
+    fetchApi: config.fetchApi,
+    middleware: config.middleware,
+    queryParamsStringify: config.queryParamsStringify,
+    username: config.username,
+    password: config.password,
+    apiKey: config.apiKey,
+    accessToken: config.accessToken,
+    headers: config.headers,
+    credentials: config.credentials,
+  });
+}
 
 export default class VRSandbox {
   public readonly id: string;
@@ -34,7 +52,7 @@ export default class VRSandbox {
   public readonly envVars?: { [key: string]: string };
   public readonly region?: string;
   public readonly nodeId?: string;
-  public readonly autoSleep?: boolean;
+  public autoSleep?: boolean;
   public readonly labels?: { [key: string]: string };
   public readonly publishPorts?: number[];
   public readonly fs: FS;
@@ -87,11 +105,11 @@ export default class VRSandbox {
     this.autoSleep = sandbox.autoSleep;
     this.labels = sandbox.labels;
     this.publishPorts = sandbox.publishPorts;
-    this.config = config;
-    this.fs = new FS(sandbox.id, config);
-    this.pty = new PTY(sandbox.id, config);
-    this.interpreter = new CodeInterpreter(sandbox.id, config);
-    this.commands = new Commands(sandbox.id, config);
+    this.config = configForNode(config, sandbox.nodeId);
+    this.fs = new FS(sandbox.id, this.config);
+    this.pty = new PTY(sandbox.id, this.config);
+    this.interpreter = new CodeInterpreter(sandbox.id, this.config);
+    this.commands = new Commands(sandbox.id, this.config);
     this.execApi = new ExecutionApi(this.config);
     this.sandboxesApi = new SandboxesApi(this.config);
   }
@@ -128,6 +146,20 @@ export default class VRSandbox {
         id: this.id,
       }),
     );
+  }
+
+  /** Patch mutable fields (`PATCH …/sandboxes/{id}`). Currently `autoSleep` only. */
+  async update(patch: { autoSleep?: boolean }) {
+    const res = await wrapRequest(
+      this.sandboxesApi.updateSandbox({
+        id: this.id,
+        updateSandboxRequest: patch,
+      }),
+    );
+    if (res.data?.autoSleep !== undefined) {
+      this.autoSleep = res.data.autoSleep;
+    }
+    return res;
   }
 
   /** Alias of `sleep()` (OpenAPI has no `/stop`). */

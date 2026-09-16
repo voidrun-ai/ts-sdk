@@ -199,3 +199,31 @@ test('getPublicUrl returns undefined for unknown port', async () => {
   const entry = await sandbox.getPublicUrl(9999);
   assert.equal(entry, undefined);
 });
+
+test('sandbox APIs pin to {nodeId}-{fleet host}', async () => {
+  const { fetchApi, calls } = makeFakeFetch({
+    body: envelope([{ port: 8080, url: 'https://s-8080.sb' }]),
+  });
+  const config = new Configuration({
+    basePath: 'https://dev-ee-api.vrsbx.icu/api',
+    apiKey: 'k',
+    fetchApi,
+  });
+  const model: SandboxModel = {
+    id: '65fabc1234567890abcdef12',
+    name: 'sb',
+    cpu: 1,
+    mem: 1024,
+    orgId: 'org1',
+    createdAt: new Date('2026-01-01T00:00:00Z'),
+    createdBy: 'user1',
+    status: 'running',
+    nodeId: 't3qk5hhvhg',
+  };
+  const sandbox = new VRSandbox(model, config);
+  await sandbox.getPublicUrls();
+  assert.equal(
+    calls[0]!.url,
+    'https://t3qk5hhvhg-dev-ee-api.vrsbx.icu/api/sandboxes/65fabc1234567890abcdef12/public-urls',
+  );
+});
